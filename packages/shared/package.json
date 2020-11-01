@@ -1,0 +1,18 @@
+{
+  "name": "shared",
+  "version": "1.0.0",
+  "description": "Shared Types for Client and Server",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "Wilfred Lopez",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^4.0.5",
+    "@types/mongodb": "^3.5.28",
+    "@types/mongoose": "^5.7.36"
+  }
+}
