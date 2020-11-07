@@ -1,16 +1,29 @@
 import React from 'react'
-import Button, { ButtonProps } from '@material-ui/core/Button'
 import UnstyledLink from './UnstyledLink'
+import ButtonFlex, { ButtonFlexProps } from '../../styles/ButtonFlex'
 
-interface Props extends ButtonProps {
+interface Props extends ButtonFlexProps {
     to: string
+    withPadding?: boolean
+    inline?: boolean
+    bold?: boolean
 }
 
-const LinkButton = ({ to, children, ...buttonProps }: Props) => {
+const LinkButton = ({ to, children, inline = false, withPadding = false, bold, color = 'text-inherit', ...buttonProps }: Props) => {
     return <UnstyledLink to={to}>
-        <Button {...buttonProps}>
+        <ButtonFlex
+            color={color}
+            {...buttonProps} style={{
+                ...buttonProps.style,
+                padding: !withPadding ? 0 : undefined,
+                margin: "auto",
+                textTransform: "none",
+                minWidth: "initial",
+                display: inline ? 'contents' : undefined,
+                fontWeight: bold ? 'bold' : undefined
+            }} >
             {children}
-        </Button>
+        </ButtonFlex>
     </UnstyledLink>
 }
 

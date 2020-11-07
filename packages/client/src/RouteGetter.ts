@@ -8,8 +8,12 @@ type RouteKeys =
   | 'register'
   | 'account'
   | 'create-survey'
-  | 'my-surveys'
+  | 'edit-surveys'
   | 'update-survey'
+  | 'display-surveys'
+  | 'display-surveys-state'
+  | 'one-survey'
+  | 'one-survey-state'
 interface AppRoutes extends RouterGetterRecord<RouteKeys> {
   home: {
     value: string
@@ -29,10 +33,16 @@ interface AppRoutes extends RouterGetterRecord<RouteKeys> {
   account: {
     value: string
   }
+  'display-surveys': {
+    value: string
+    params: {
+      publicKey: string
+    }
+  }
   'create-survey': {
     value: string
   }
-  'my-surveys': {
+  'edit-surveys': {
     value: string
   }
   'update-survey': {
@@ -40,6 +50,19 @@ interface AppRoutes extends RouterGetterRecord<RouteKeys> {
     params: {
       id: string
     }
+  }
+  'display-surveys-state': {
+    value: string
+  }
+  'one-survey': {
+    value: string
+    params: {
+      publicKey: string
+      id: string
+    }
+  }
+  'one-survey-state': {
+    value: string
   }
 }
 
@@ -65,7 +88,7 @@ export const RouteGetter = new RouteGetterGenerator<RouteKeys, AppRoutes>({
   'create-survey': {
     value: '/create-survey',
   },
-  'my-surveys': {
+  'edit-surveys': {
     value: '/account/my-surveys',
   },
   'update-survey': {
@@ -73,6 +96,25 @@ export const RouteGetter = new RouteGetterGenerator<RouteKeys, AppRoutes>({
     params: {
       id: '',
     },
+  },
+  'display-surveys': {
+    value: '/surveys-redirect/:publicKey',
+    params: {
+      publicKey: '/',
+    },
+  },
+  'display-surveys-state': {
+    value: '/surveys/',
+  },
+  'one-survey': {
+    value: '/survey/:id/:publicKey',
+    params: {
+      publicKey: '/',
+      id: '/',
+    },
+  },
+  'one-survey-state': {
+    value: '/survey',
   },
 })
 

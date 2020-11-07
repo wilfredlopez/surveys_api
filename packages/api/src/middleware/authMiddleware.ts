@@ -1,13 +1,15 @@
 import { NextFunction, Response } from 'express'
 import utils from '../utils/index'
+import MyRequest from '../interfaces/MyRequest'
 
 //WITH THIS METHOD THE USER NEEDS TO SEND THE HEADER "Authorization": "Bearer accesstokenhere"
 export async function authMiddleware(
-  req: any,
+  req: MyRequest,
   _res: Response,
   next: NextFunction
 ) {
   const bearerBeader = req.headers['authorization']
+
   if (typeof bearerBeader !== 'undefined') {
     try {
       //split at the space

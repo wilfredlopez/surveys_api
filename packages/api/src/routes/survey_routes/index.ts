@@ -1,38 +1,18 @@
-import { RequestHandler } from 'express'
+import { RequestHandler, Request } from 'express'
 import SurveyQuestionDB from '../../db/SurveyQuestionDB'
 import { RawSurvey } from '../../interfaces'
 import surveyDB from '../../db/surveysDB'
 import { SurveyResponseInput } from '../../interfaces/index'
 import {
   SurveyQuestionClient,
-  isValidQuestionType,
   SurveyQuestionGenerator,
 } from '../../interfaces/index'
+import { utils, ExpectedCreate, User } from 'shared'
 import MyRequest from '../../interfaces/MyRequest'
 import { Survey } from '../../interfaces/'
-
-const isString = (id?: string) => typeof id === 'string' && id.trim() !== ''
-function isSurveyQuestionInput(quests?: SurveyQuestionClient[]) {
-  if (!Array.isArray(quests)) {
-    return false
-  }
-  if (quests.length === 0) {
-    return false
-  }
-  for (let q of quests) {
-    if (!isValidQuestionType(q.type)) {
-      return false
-    }
-    if (!isString(q.title)) {
-      return false
-    }
-    if (!Array.isArray(q.options)) {
-      return false
-    }
-  }
-
-  return true
-}
+import userDb from '../../db/userDb'
+import { UserHelper } from '../../interfaces/BaseUserGenerator'
+import { BaseRoute } from '../BaseRoute'
 
 function deleteProp<T extends {} = any>(obj: T, key: keyof T) {
   if (obj[key]) {
@@ -40,15 +20,44 @@ function deleteProp<T extends {} = any>(obj: T, key: keyof T) {
   }
 }
 
-export type ExpectedCreate = Pick<RawSurvey, 'name' | 'questions' | 'open'>
-
 export type SurveyCreateResponse = Survey | { error: string }
 
-class SurveyRoutes {
-  getOpen: RequestHandler = async (_req, res) => {
+class SurveyRoutes extends BaseRoute {
+  async validateClientKey(req: Request): Promise<string | User> {
+    const publicKey = req.query.publicKey as string | undefined
+
+    if (!publicKey) {
+      return 'publicKey Most be sent with the request.'
+    }
+
+    const client = await userDb.findOne({
+      publicKey: publicKey,
+    })
+
+    if (!client) {
+      return `Client Not found with publicKey`
+    }
+    const isValidKey = UserHelper.isValidKey(client.publicKey)
+
+    if (!isValidKey) {
+      return `publicKey Expired.`
+    }
+    return client
+  }
+  getOpen: RequestHandler = async (req, res) => {
     try {
+      const client = await this.validateClientKey(req)
+      if (typeof client === 'string') {
+        return res.status(404).json({
+          error: client,
+        })
+      }
+      // const client = await userDb.findOne({
+      //   publicKey: publicKey,
+      // })
+
       const surveys = await surveyDB.find(
-        { open: true },
+        { open: true, creator: client.id },
         {},
         { populate: 'questions' }
       )
@@ -59,7 +68,7 @@ class SurveyRoutes {
     } catch (error) {
       console.error(error)
 
-      return res.status(500).json({
+      return this.unknownError(res, {
         surveys: [],
         error: 'Internal Server Error',
       })
@@ -80,12 +89,12 @@ class SurveyRoutes {
     try {
       const surveys = await surveyDB.find({}, {}, { populate: 'creator' })
 
-      res.json({
+      return res.json({
         surveys: surveys,
       })
     } catch (error) {
       console.error(error)
-      res.status(500).json({
+      return this.unknownError(res, {
         surveys: [],
         error: 'Internal Server Error.',
       })
@@ -120,6 +129,22 @@ class SurveyRoutes {
       })
     }
   }
+
+  deleteQuestionFromSurvey: RequestHandler<{
+    qid: string
+  }> = async (req, res) => {
+    const { qid } = req.params
+
+    const question = await SurveyQuestionDB.findById(qid)
+
+    if (!question) {
+      return res.json({
+        error: 'Question Not Found',
+      })
+    }
+    const deleted = await question.remove()
+    return res.json(deleted)
+  }
   updateSurvey: RequestHandler = async (req, res) => {
     try {
       const id = req.params.id as string
@@ -131,18 +156,21 @@ class SurveyRoutes {
       }
 
       if (valuesToUpdate.questions) {
-        if (!isSurveyQuestionInput(valuesToUpdate.questions)) {
+        if (!utils.isSurveyQuestionInput(valuesToUpdate.questions)) {
           res.status(400).json({
             error: 'Invalid Questions input.',
           })
           return
         }
+        function isInvalidID(_id: any): _id is string {
+          return typeof _id === 'undefined' || _id === ''
+        }
         if (Array.isArray(valuesToUpdate.questions)) {
           const nonExistingQuestions = (valuesToUpdate.questions as SurveyQuestionClient[]).filter(
-            q => q._id === ''
+            q => isInvalidID(q._id)
           )
           const ExistingQuestions = (valuesToUpdate.questions as SurveyQuestionClient[]).filter(
-            q => q._id !== ''
+            q => !isInvalidID(q._id)
           )
           const raw_questions = SurveyQuestionGenerator.transformQuestions(
             nonExistingQuestions
@@ -187,10 +215,14 @@ class SurveyRoutes {
       const data = req.body as ExpectedCreate
       const userId = req.userId!
 
-      const isValidData = this.validateCreate(data)
+      if (!data.open) {
+        data.open = false
+      }
+
+      const [error, isValidData] = utils.validateCreate(data)
       if (!isValidData) {
         return res.status(400).json({
-          error: 'missing fields.',
+          error: error,
         })
       }
 
@@ -221,55 +253,85 @@ class SurveyRoutes {
       let newSurvey: RawSurvey = {
         ...defaultValues,
         ...data,
+        questions: [],
         creatorId: userId,
       }
 
       const survey = await surveyDB.create({
         ...newSurvey,
         creatorId: userId,
-        //@ts-ignore
-        creator: userId,
+        creator: userId as any,
       })
       await survey.save()
       return res.json(survey)
     } catch (error) {
+      console.error(error)
+
       return res.status(500).json({
         error: 'Internal Server Error',
       })
     }
   }
 
-  private validateCreate(data: ExpectedCreate) {
-    const expected: { [K in keyof ExpectedCreate]: (data: any) => boolean } = {
-      name: isString,
-      questions: isSurveyQuestionInput,
-      open: () => true,
-    }
-    let val: any
-    let fn: (v: any) => boolean
-    for (let key in expected) {
-      val = data[key as keyof ExpectedCreate]
-      fn = expected[key as keyof typeof expected]
-      if (typeof val === 'undefined') {
-        console.log('val is undefined')
-        return false
-      }
-      if (!fn(val)) {
-        return false
-      }
-    }
-    return true
-  }
   getOne: RequestHandler = async (req, res) => {
     const id = req.params.id as string
-    const survey = await surveyDB.findById(id, {}, { populate: 'questions' })
+    const client = await this.validateClientKey(req)
+    if (typeof client === 'string') {
+      return res.status(404).json({
+        error: client,
+      })
+    }
+
+    const survey = await surveyDB.findOne(
+      {
+        _id: id,
+        creator: client._id,
+      },
+      {},
+      { populate: 'questions' }
+    )
     if (!survey) {
-      res.status(404).json({
+      return res.status(404).json({
         error: 'Survey Not Found',
       })
-      return
     }
-    res.json(survey)
+    return res.json(survey)
+  }
+  deleteOne: RequestHandler = async (req: MyRequest, res) => {
+    const id = req.params.id as string
+
+    if (!req.userId) {
+      return res.status(401).json({
+        error: 'Unauthorized',
+      })
+    }
+
+    const survey = await surveyDB.findOne(
+      {
+        _id: id,
+        creator: req.userId as any,
+      },
+      {}
+    )
+
+    if (!survey) {
+      return res.status(404).json({
+        error: 'Survey Not Found',
+      })
+    }
+
+    const questions: string[] = (survey.questions as any) || []
+    // const questions = survey.questions
+
+    for (let q of questions) {
+      await SurveyQuestionDB.deleteOne({
+        _id: q,
+      }).exec()
+    }
+
+    const deleted = await survey.remove()
+
+    return res.json(deleted)
   }
   addSurveyResponse: RequestHandler = async (req, res) => {
     try {
@@ -287,9 +349,11 @@ class SurveyRoutes {
         res.status(400).json({
           error: `Invalid request. Please send an array with {
           questionId: string
-          answer: string
+          answer: string[]
         }`,
+          received: answers,
         })
+
         return
       }
 

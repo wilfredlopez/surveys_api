@@ -3,7 +3,7 @@ import { Validator } from '@wilfredlopez/react-utils'
 import React from 'react'
 import { UserInput } from 'shared'
 import fetchUtils from '../fetchUtils/index'
-import { useHistory } from 'react-router-dom'
+import { Redirect, useHistory } from 'react-router-dom'
 import RouteGetter from '../RouteGetter'
 import { useAppContext } from '../context/AppContext'
 import { makeStyles } from '@material-ui/core/styles'
@@ -27,9 +27,11 @@ const Register = (_: Props) => {
         firstname: '',
         lastname: '',
         password: '',
+        plan: 'trial'
     })
-    const { dispatch } = useAppContext()
+    const { dispatch, user: stateUser } = useAppContext()
     const [resultHandle, setResultHandle] = React.useState<{ loading: boolean, errorMessage: string }>({ loading: false, errorMessage: '' })
+
 
     function buttonIsDisabled() {
         for (const [key, val] of Object.entries(user)) {
@@ -45,7 +47,7 @@ const Register = (_: Props) => {
         }
         return false
     }
-    function handleChange(key: keyof UserInput, value: string) {
+    function handleChange<K extends keyof UserInput>(key: K, value: UserInput[K]) {
         const updated = { ...user }
         updated[key] = value
         setUser(updated)
@@ -75,13 +77,18 @@ const Register = (_: Props) => {
             }
 
         }).catch(e => {
-            console.log(e)
             setResultHandle({
                 errorMessage: e['message'] || "There was an error.",
                 loading: false
             })
             fetchUtils.handleUnauthorized(e, history)
         })
+    }
+
+
+
+    if (typeof stateUser !== 'undefined') {
+        return <Redirect to={RouteGetter.path('account')} />
     }
 
 

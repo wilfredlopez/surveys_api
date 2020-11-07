@@ -1,11 +1,11 @@
 import { Button, Card, CardActions, CardContent, CardHeader, Checkbox, Container, FormControl, FormControlLabel, FormGroup, Input, InputLabel, makeStyles, MenuItem, Select, TextField, Typography } from '@material-ui/core'
-import { Validator } from '@wilfredlopez/react-utils'
 import React from 'react'
-import { ExpectedCreate, isValidQuestionType, QuestionInput, QuestionType, SurveyQuestionClient } from 'shared'
+import { ExpectedCreate, utils, QuestionInput, QuestionType } from 'shared'
 import fetchUtils from '../fetchUtils/index'
 import { useHistory } from 'react-router-dom'
 import RouteGetter from '../RouteGetter'
 import useProtectedRoute from '../hooks/useProtectedRoute'
+import { StringHelper } from '@wilfredlopez/react-utils'
 interface Props {
 
 }
@@ -31,52 +31,6 @@ const useStyles = makeStyles(theme => ({
     }
 }))
 
-// const isString = (id?: string) => typeof id === 'string' && id.trim() !== ''
-function isSurveyQuestionInput(quests?: SurveyQuestionClient[]) {
-    if (!Array.isArray(quests)) {
-        return false
-    }
-    if (quests.length === 0) {
-        return false
-    }
-    for (let q of quests) {
-        if (!isValidQuestionType(q.type)) {
-            return false
-        }
-        if (!Validator.isNotEmptyString(q.title)) {
-            return false
-        }
-        if (!Array.isArray(q.options)) {
-            return false
-        }
-    }
-
-    return true
-}
-
-function matchError(key: string) {
-    return key === 'name' ? 'Invalid name' : key === 'questions' ? 'Invalid Questions' : "open should should boolean"
-}
-function validateCreate(data: ExpectedCreate): [isValid: boolean, message: string] {
-    const expected: { [K in keyof ExpectedCreate]: (data: any) => boolean } = {
-        name: Validator.isNotEmptyString,
-        questions: isSurveyQuestionInput,
-        open: (_: boolean) => true
-    }
-    let val: any
-    let fn: (v: any) => boolean
-    for (let key in expected) {
-        val = data[key as keyof ExpectedCreate]
-        if (typeof val === 'undefined') {
-            return [false, 'Value is undefined']
-        }
-        fn = expected[key as keyof typeof expected]
-        if (!fn(val)) {
-            return [false, matchError(key)]
-        }
-    }
-    return [true, '']
-}
 
 
 
@@ -137,7 +91,7 @@ const CreateSurvey = (_: Props) => {
             open: autoOpen,
             questions: questions,
         }
-        const [isValid, error] = validateCreate(survey)
+        const [error, isValid] = utils.validateCreate(survey)
         if (!isValid) {
             setMessage({
                 text: error,
@@ -344,7 +298,7 @@ const CreateSurvey = (_: Props) => {
                 <Card>
 
                     <CardHeader
-                        subheader={message.type}
+                        subheader={StringHelper.toProperCase(message.type)}
                     >
                     </CardHeader>
                     <CardContent>

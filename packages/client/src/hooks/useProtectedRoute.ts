@@ -27,6 +27,10 @@ const useProtectedRoute = (redirectTo?: string) => {
       firstname: '',
       lastname: '',
       password: '',
+      privateKey: '',
+      publicKey: '/',
+      plan: 'trial',
+      isAdmin: false,
     }
     return fakeUser
   }

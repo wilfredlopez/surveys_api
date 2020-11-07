@@ -9,7 +9,7 @@ import fetchUtils from '../fetchUtils'
 const initialState: AppContextState = {
     auth: {
         user: undefined,
-        errorMessage: undefined,
+        userErrorMessage: undefined,
         loadingUser: false,
     },
     surveys: {
@@ -72,30 +72,38 @@ let fetched = false
 
 function ContextGet(context: AppContextState) {
 
-    async function execFetch() {
-        const res = await fetch(API_URL + "/surveys")
+    async function execFetch(publicKey: string) {
+        const res = await fetch(API_URL + `/surveys?publicKey=${publicKey}`)
         const data = await res.json()
         fetched = true
+        if (data.error) {
+            throw new Error(data.error)
+        }
         return data.surveys as SurveyClient[]
     }
-    async function fetchSurveys(refetch = false) {
+    async function fetchSurveys({ refetch, publicKey }: { refetch?: boolean, publicKey: string }) {
         if (refetch) {
-            return execFetch()
+            return execFetch(publicKey)
         }
         if (!fetched) {
-            return execFetch()
+            return execFetch(publicKey)
         } else {
-            console.log('returning from cache')
-            return context.surveys.openSurveys
+            if (Array.isArray(context.surveys.openSurveys)) {
+                console.log('returning from cache')
+                return context.surveys.openSurveys
+
+            } else {
+                return execFetch(publicKey)
+            }
         }
     }
 
-    async function getSurvey(id: string) {
+    async function getSurvey({ id, publicKey }: { id: string, publicKey: string }) {
         const exist = context.surveys.openSurveys.find(s => s._id === id)
         if (exist) {
             return exist
         } else {
-            const res = await fetchUtils.fetchOneSurvey(id)
+            const res = await fetchUtils.fetchOneSurvey(id, publicKey)
             return res
         }
 

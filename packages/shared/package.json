@@ -10,6 +10,9 @@
   "keywords": [],
   "author": "Wilfred Lopez",
   "license": "ISC",
+  "dependencies": {
+    "@wilfredlopez/react-utils": "^3.0.4"
+  },
   "devDependencies": {
     "typescript": "^4.0.5",
     "@types/mongodb": "^3.5.28",

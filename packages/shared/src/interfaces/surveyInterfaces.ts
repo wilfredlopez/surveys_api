@@ -1,23 +1,16 @@
 import { User } from './userInterfaces'
 import { Document } from 'mongoose'
 import { ClientI } from './client.interface'
+import { WithTimeStamps } from './common'
 
-export function isValidQuestionType(
-  t?: QuestionType | string
-): t is QuestionType {
-  if (!t || typeof t !== 'string') return false
-  return t === 'multi-choice' || t === 'open-answer' || t === 'single-choice'
-}
 export type QuestionType = 'multi-choice' | 'single-choice' | 'open-answer'
 
-export interface RawSurvey {
+export interface RawSurvey extends WithTimeStamps {
   name: string
   open: boolean
   questions: SurveyQuestion[]
   creatorId: User['_id']
   creator?: User | undefined
-  createdAt?: string | undefined
-  updatedAt?: string | undefined
 }
 
 export interface RawSurveyQuestion {
@@ -38,6 +31,16 @@ export interface SurveyQuestionClient extends RawSurveyQuestion, ClientI {}
 export interface AnswerInput {
   questionId: string
   answer: string[]
+}
+
+export interface AnswerValue {
+  text: string
+  count: number
+}
+
+export interface OrganizedAnswers {
+  total: number
+  answers: AnswerValue[]
 }
 
 export interface QuestionInput extends Omit<RawSurveyQuestion, 'answers'> {

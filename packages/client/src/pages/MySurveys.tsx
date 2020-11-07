@@ -7,6 +7,7 @@ import RouteGetter from '../RouteGetter'
 import useProtectedRoute from '../hooks/useProtectedRoute'
 import UnstyledLink from '../components/shared/UnstyledLink'
 import { useBoolean, useEffectOnce } from 'react-use-light'
+import { UserClient } from '../../../shared/dist/interfaces/userInterfaces'
 
 interface Props {
 
@@ -15,7 +16,7 @@ interface Props {
 const MySurveys = (props: Props) => {
     const [surveys, setSurveys] = React.useState<SurveyUnpolulated[]>([])
     const history = useHistory()
-    useProtectedRoute()
+    const user = useProtectedRoute()
     useEffectOnce(() => {
         fetchUtils.getMySurveys().then((data) => {
             if ('error' in data) {
@@ -34,7 +35,7 @@ const MySurveys = (props: Props) => {
             <ol>
 
                 {surveys.map((sur, index) => {
-                    return <li key={sur._id}><UserSurvey survey={sur} index={index} /></li>
+                    return <li key={sur._id}><UserSurvey user={user} survey={sur} index={index} /></li>
                 })}
             </ol>
 
@@ -42,7 +43,7 @@ const MySurveys = (props: Props) => {
     )
 }
 
-const UserSurvey = ({ survey }: { survey: SurveyUnpolulated, index: number }) => {
+const UserSurvey = ({ survey, user }: { survey: SurveyUnpolulated, index: number, user: UserClient }) => {
     const history = useHistory()
     const [open, setOpen] = useBoolean(survey.open)
     function toogleOpen() {
@@ -58,6 +59,15 @@ const UserSurvey = ({ survey }: { survey: SurveyUnpolulated, index: number }) =>
                 fetchUtils.handleUnauthorized({ error: e.message }, history)
             }
         })
+    }
+
+
+    function copyLink() {
+        const root = window.location.host
+        const prot = window.location.protocol
+        const link = RouteGetter.path('one-survey', { id: survey._id, publicKey: user.publicKey })
+        // navigator.clipboard.writeText(`survey/${user.publicKey}/${survey._id}`)
+        navigator.clipboard.writeText(`${prot}//${root}${link}`)
     }
 
     return <Box mb={3}>
@@ -76,6 +86,7 @@ const UserSurvey = ({ survey }: { survey: SurveyUnpolulated, index: number }) =>
                         <Button size="small" variant="outlined" color="primary" onClick={() => {
                             history.push(RouteGetter.path('update-survey', { id: survey._id }))
                         }}>Edit</Button>
+                        <Button onClick={copyLink}>Copy Link</Button>
                     </ButtonGroup>
                 </Box>
             </Box>

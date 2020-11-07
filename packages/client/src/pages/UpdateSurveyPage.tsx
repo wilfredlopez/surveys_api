@@ -13,12 +13,13 @@ interface Props {
 const UpdateSurveyPage = (props: Props) => {
     const { id } = useParams<{ id: string }>()
     const [survey, setSurvey] = React.useState<SurveyClient>()
-    useProtectedRoute()
+
+    const client = useProtectedRoute()
 
     const { getSurvey } = useAppContext()
 
     React.useLayoutEffect(() => {
-        getSurvey(id).then((s) => {
+        getSurvey({ id, publicKey: client.publicKey }).then((s) => {
             setSurvey(s)
         })
 

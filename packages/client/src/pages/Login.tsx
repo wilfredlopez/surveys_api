@@ -1,4 +1,4 @@
-import { Button, FormControl, FormHelperText, Input, InputLabel, Container, Box } from '@material-ui/core'
+import { FormControl, FormHelperText, Input, InputLabel, Container, Box } from '@material-ui/core'
 import React from 'react'
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles'
 import { Validator } from '@wilfredlopez/react-utils'
@@ -8,6 +8,7 @@ import RouteGetter from '../RouteGetter'
 import { useAppContext } from '../context/AppContext'
 
 import fetchUtils from '../fetchUtils/index'
+import ButtonFlex from '../styles/ButtonFlex'
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -31,12 +32,13 @@ const Login = (_: Props) => {
     const [emailError, setEmailError] = React.useState<string>()
     const [passwordError, setPasswordError] = React.useState<string>()
     const classes = useStyles()
-    const { errorMessage, user, dispatch } = useAppContext()
+    const { userErrorMessage: errorMessage, user, dispatch } = useAppContext()
     const history = useHistory()
+
 
     React.useEffect(() => {
         if (user) {
-            history.replace(RouteGetter.path('home'))
+            history.replace(RouteGetter.path('account'))
         }
         //eslint-disable-next-line
     }, [user])
@@ -89,16 +91,22 @@ const Login = (_: Props) => {
 
         fetchUtils.login({ email, password: passowrd }).then(data => {
             if (data.error) {
-                dispatch({
-                    type: 'setUserError',
-                    payload: {
-                        error: data.error
-                    }
-                })
-                return
+                throw new Error(data.error)
             }
             if (data.user) {
                 dispatch({ 'type': 'setUser', payload: data.user })
+            }
+        }).catch(e => {
+            if (e instanceof Error) {
+
+                dispatch({
+                    type: 'setUserError',
+                    payload: {
+                        error: e.message
+                    }
+                })
+            } else {
+                console.log(e)
             }
         })
 
@@ -135,8 +143,7 @@ const Login = (_: Props) => {
                     <FormHelperText error>{errorMessage}</FormHelperText>
                 </div>
                 <Box display="flex" justifyContent="space-between" mt={2}>
-
-                    <Button variant="contained" type="submit" disabled={isButtonDisabled} color="primary">Login</Button>
+                    <ButtonFlex type="submit" disabled={isButtonDisabled} color="contained-info">Login</ButtonFlex>
                     <UnstyledLink to={RouteGetter.path('register')} color="blue">Create your Account</UnstyledLink>
                 </Box>
             </form>

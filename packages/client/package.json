@@ -19,9 +19,12 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.0",
     "react-use-light": "^1.1.5",
-    "typescript": "^4.0.3",
+    "typescript": "4.0.5",
     "web-vitals": "^0.2.4",
-    "wl-react-skeleton": "^1.0.4"
+    "wl-react-skeleton": "^1.0.4",
+    "@typescript-eslint/eslint-plugin":"4.6.1",
+    "@typescript-eslint/parser":"4.6.1",
+    "@babel/core":"7.12.3"
   },
   "scripts": {
     "start": "react-scripts start",

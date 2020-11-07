@@ -3,6 +3,7 @@ import { User } from '../interfaces'
 import bcrypt from 'bcryptjs'
 
 import { JWT_SECRET } from '../env'
+import { ObjectID } from 'mongodb'
 
 class UtilsBase {
   async hashPassword(password: string) {
@@ -14,6 +15,19 @@ class UtilsBase {
     const validPassword = await bcrypt.compare(password, correctPassword)
 
     return validPassword
+  }
+
+  createClientKeys(userId: string | ObjectID, email: string) {
+    const publicKey = jwt.sign({ userId: userId, email: email }, JWT_SECRET, {
+      // expiresIn: '30min',
+      expiresIn: '30days',
+    })
+    const privateKey = jwt.sign({ userId: userId, email: email }, JWT_SECRET, {
+      // expiresIn: '30min',
+      expiresIn: '1year',
+    })
+
+    return { publicKey, privateKey }
   }
 
   createToken(user: User) {

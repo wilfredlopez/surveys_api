@@ -34,11 +34,11 @@ export default function AppMenu() {
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
             <UnstyledLink to={RouteGetter.path('home')}>
-              React Surveys
+              Reactive Surveys
           </UnstyledLink>
           </Typography>
-          {user ? <LinkButton color="inherit" to={RouteGetter.path('account')}>{user.firstname}</LinkButton> :
-            <LinkButton color="inherit" to={RouteGetter.path('login')}>Login</LinkButton>
+          {user ? <LinkButton color="text-inherit" to={RouteGetter.path('account')} withPadding bold>{user.firstname.toUpperCase()}</LinkButton> :
+            <LinkButton color='text-inherit' to={RouteGetter.path('login')} withPadding bold>LOGIN</LinkButton>
           }
         </Toolbar>
       </AppBar>

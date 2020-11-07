@@ -4,7 +4,7 @@ import React from 'react'
 import { useHistory } from 'react-router-dom'
 import fetchUtils from '../fetchUtils/index'
 import useProtectedRoute from '../hooks/useProtectedRoute'
-import { ExpectedCreate, isValidQuestionType, QuestionType, SurveyClient, SurveyQuestionClient } from 'shared'
+import { ExpectedCreate, QuestionType, SurveyClient, SurveyQuestionClient, utils } from 'shared'
 import RouteGetter from '../RouteGetter'
 interface Props {
     survey: SurveyClient
@@ -40,7 +40,7 @@ function isSurveyQuestionInput(quests?: SurveyQuestionClient[]) {
         return false
     }
     for (let q of quests) {
-        if (!isValidQuestionType(q.type)) {
+        if (!utils.isValidQuestionType(q.type)) {
             return false
         }
         if (!Validator.isNotEmptyString(q.title)) {

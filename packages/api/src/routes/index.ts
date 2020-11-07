@@ -3,6 +3,8 @@ import surveyRoutes from './survey_routes'
 import authRoutes from './auth_routes/index'
 import { authMiddleware } from '../middleware/authMiddleware'
 import { ensureAuthenticated } from '../middleware/ensureAuth'
+import { ensureAdmin } from '../middleware/ensureAdmin'
+import orderRoutes from './orders/index'
 
 const routes = Router()
 
@@ -14,6 +16,18 @@ routes.use(authMiddleware)
 routes.post('/login', authRoutes.login.bind(authRoutes))
 routes.post('/register', authRoutes.register.bind(authRoutes))
 routes.get('/me', authRoutes.me.bind(authRoutes))
+routes.get('/users/all', ensureAdmin, authRoutes.allUsers.bind(authRoutes))
+routes.delete(
+  '/users/:id',
+  ensureAuthenticated,
+  authRoutes.removeUser.bind(authRoutes)
+)
+
+routes.post(
+  '/users/admin/:id',
+  ensureAuthenticated,
+  authRoutes.makeUserAdmin.bind(authRoutes)
+)
 
 /**
  * SURVEYS
@@ -25,13 +39,14 @@ routes.get(
   surveyRoutes.mySurveys.bind(surveyRoutes)
 )
 routes.get('/surveys', surveyRoutes.getOpen.bind(surveyRoutes))
-routes.get(
-  '/all/surveys',
-  ensureAuthenticated,
-  surveyRoutes.getAll.bind(surveyRoutes)
-)
+routes.get('/all/surveys', ensureAdmin, surveyRoutes.getAll.bind(surveyRoutes))
 
 routes.get('/surveys/:id', surveyRoutes.getOne.bind(surveyRoutes))
+routes.delete(
+  '/surveys/:id',
+  ensureAuthenticated,
+  surveyRoutes.deleteOne.bind(surveyRoutes)
+)
 //create new survey
 routes.post(
   '/surveys',
@@ -54,6 +69,21 @@ routes.post(
 routes.post(
   '/surveys/answer/:id',
   surveyRoutes.addSurveyResponse.bind(surveyRoutes)
+)
+
+// DELETE QUESTION FROM SURVEY
+routes.delete(
+  '/questions/:qid',
+  ensureAuthenticated,
+  surveyRoutes.deleteQuestionFromSurvey.bind(surveyRoutes)
+)
+
+//ORDERS
+
+routes.post(
+  '/orders',
+  ensureAuthenticated,
+  orderRoutes.placeOrder.bind(orderRoutes)
 )
 
 export default routes
