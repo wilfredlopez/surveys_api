@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken'
-import { UserDB } from 'shared'
+import { User } from '../interfaces'
 import bcrypt from 'bcryptjs'
 
 import { JWT_SECRET } from '../env'
@@ -30,7 +30,7 @@ class UtilsBase {
     return { publicKey, privateKey }
   }
 
-  createToken(user: UserDB) {
+  createToken(user: User) {
     const accessToken = jwt.sign(
       { userId: user._id, email: user.email },
       JWT_SECRET,

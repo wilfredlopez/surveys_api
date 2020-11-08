@@ -1,6 +1,5 @@
 import { Validator } from '@wilfredlopez/react-utils'
 import { Plan } from './userInterfaces'
-
 export interface BillingInfo {
   firstname: string
   lastname: string

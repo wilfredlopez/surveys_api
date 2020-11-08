@@ -1,20 +1,18 @@
 import { RequestHandler, Request } from 'express'
-import { getConnection } from 'typeorm'
-import { SurveyQuestion } from '../../entities/SurveyQuestion'
+import SurveyQuestionDB from '../../db/SurveyQuestionDB'
 import { RawSurvey } from '../../interfaces'
-import { Survey } from '../../entities/Survey'
+import surveyDB from '../../db/surveysDB'
 import { SurveyResponseInput } from '../../interfaces/index'
 import {
   SurveyQuestionClient,
   SurveyQuestionGenerator,
 } from '../../interfaces/index'
-import { SharedUtils, ExpectedCreate } from 'shared'
+import { utils, ExpectedCreate, User } from 'shared'
 import MyRequest from '../../interfaces/MyRequest'
-import { User } from '../../entities/User'
+import { Survey } from '../../interfaces/'
+import userDb from '../../db/userDb'
 import { UserHelper } from '../../interfaces/BaseUserGenerator'
 import { BaseRoute } from '../BaseRoute'
-import getSurveyWithQuestions from './getSurveyWithQuestions'
-import { ObjectID } from 'mongodb'
 
 function deleteProp<T extends {} = any>(obj: T, key: keyof T) {
   if (obj[key]) {
@@ -32,7 +30,7 @@ class SurveyRoutes extends BaseRoute {
       return 'publicKey Most be sent with the request.'
     }
 
-    const client = await User.findOne({
+    const client = await userDb.findOne({
       publicKey: publicKey,
     })
 
@@ -58,23 +56,14 @@ class SurveyRoutes extends BaseRoute {
       //   publicKey: publicKey,
       // })
 
-      const connection = getConnection()
-
-      const surveyRepository = connection.getRepository(Survey)
-      const surveys = await surveyRepository.find({
-        where: {
-          open: true,
-          creatorId: client._id,
-        },
-        relations: ['questions'],
-      })
-
-      console.log({ surveys })
-
-      const output: Survey[] = await getSurveyWithQuestions(surveys)
+      const surveys = await surveyDB.find(
+        { open: true, creator: client.id },
+        {},
+        { populate: 'questions' }
+      )
 
       return res.json({
-        surveys: output,
+        surveys,
       })
     } catch (error) {
       console.error(error)
@@ -88,14 +77,17 @@ class SurveyRoutes extends BaseRoute {
 
   mySurveys: RequestHandler = async (req: MyRequest, res) => {
     const id = req.userId
-
-    const surveys = await Survey.find({ creatorId: new ObjectID(id) })
+    const surveys = await surveyDB.find(
+      { creatorId: id },
+      {}
+      // { populate: 'questions' }
+    )
 
     res.json(surveys)
   }
   getAll: RequestHandler = async (_req, res) => {
     try {
-      const surveys = await Survey.find({ relations: ['creator'] })
+      const surveys = await surveyDB.find({}, {}, { populate: 'creator' })
 
       return res.json({
         surveys: surveys,
@@ -116,26 +108,20 @@ class SurveyRoutes extends BaseRoute {
     try {
       // const surveyId = req.params.id
       const questionId = req.params.questionId
-      const body = req.body as Partial<
-        Omit<SurveyQuestionClient, 'surveyId' | '_id'>
-      >
+      const body = req.body as Partial<SurveyQuestionClient>
 
-      const question = await SurveyQuestion.findOne(questionId)
+      const question = await SurveyQuestionDB.findById(questionId)
       if (!question) {
         return res.json({ error: 'Survey Not Found' })
       }
-      const connection = await getConnection()
-
-      connection
-        .createQueryBuilder()
-        .update(SurveyQuestion)
-        .set({
-          ...body,
+      await question
+        .updateOne({
+          $set: {
+            ...body,
+          },
         })
-        .where('_id = :_id', { _id: questionId })
-        .execute()
-
-      return res.json(await SurveyQuestion.findOne(questionId))
+        .exec()
+      return res.json(await SurveyQuestionDB.findById(questionId))
     } catch (error) {
       console.error(error)
       return res.status(500).json({
@@ -149,7 +135,7 @@ class SurveyRoutes extends BaseRoute {
   }> = async (req, res) => {
     const { qid } = req.params
 
-    const question = await SurveyQuestion.findOne(qid)
+    const question = await SurveyQuestionDB.findById(qid)
 
     if (!question) {
       return res.json({
@@ -170,7 +156,7 @@ class SurveyRoutes extends BaseRoute {
       }
 
       if (valuesToUpdate.questions) {
-        if (!SharedUtils.isSurveyQuestionInput(valuesToUpdate.questions)) {
+        if (!utils.isSurveyQuestionInput(valuesToUpdate.questions)) {
           res.status(400).json({
             error: 'Invalid Questions input.',
           })
@@ -186,20 +172,11 @@ class SurveyRoutes extends BaseRoute {
           const ExistingQuestions = (valuesToUpdate.questions as SurveyQuestionClient[]).filter(
             q => !isInvalidID(q._id)
           )
-
-          const survey = await Survey.findOne(id)
-          if (!survey) {
-            res.json({
-              error: 'Survey Not Found',
-            })
-            return
-          }
           const raw_questions = SurveyQuestionGenerator.transformQuestions(
-            nonExistingQuestions,
-            survey._id
+            nonExistingQuestions
           )
 
-          const questions = await SurveyQuestion.create(raw_questions)
+          const questions = await SurveyQuestionDB.create(raw_questions)
           if (questions) {
             for (const q of questions) {
               q.save()
@@ -211,21 +188,18 @@ class SurveyRoutes extends BaseRoute {
         }
       }
 
-      const connection = await getConnection()
-      const updated = await connection
-        .createQueryBuilder()
-        .update(Survey)
-        .set(valuesToUpdate)
-        .where('_id = :_id', { _id: id })
-        .execute()
+      const updated = await surveyDB.updateOne(
+        { _id: id },
+        { $set: valuesToUpdate }
+      )
 
-      if (!updated.affected) {
+      if (!updated.n) {
         res.status(404).json({
           error: 'Survey not found.',
         })
         return
       }
-      res.json(await Survey.findOne(id))
+      res.json(await surveyDB.findById(id))
     } catch (error) {
       console.error(error)
       res.status(500).json({
@@ -245,14 +219,14 @@ class SurveyRoutes extends BaseRoute {
         data.open = false
       }
 
-      const [error, isValidData] = SharedUtils.validateCreate(data)
+      const [error, isValidData] = utils.validateCreate(data)
       if (!isValidData) {
         return res.status(400).json({
           error: error,
         })
       }
 
-      const exists = await Survey.findOne({
+      const exists = await surveyDB.findOne({
         name: data.name,
       })
 
@@ -262,44 +236,33 @@ class SurveyRoutes extends BaseRoute {
         })
       }
 
+      const raw_questions = SurveyQuestionGenerator.transformQuestions(
+        data.questions
+      )
+
       const defaultValues = {
         open: false,
       }
+      const questions = await SurveyQuestionDB.create(raw_questions)
+      for (const q of questions) {
+        q.save()
+      }
 
-      let newSurvey: Omit<RawSurvey, '_id'> = {
+      data.questions = questions
+
+      let newSurvey: RawSurvey = {
         ...defaultValues,
         ...data,
-        creatorId: new ObjectID(userId),
         questions: [],
+        creatorId: userId,
       }
 
-      const survey = Survey.create({
+      const survey = await surveyDB.create({
         ...newSurvey,
+        creatorId: userId,
+        creator: userId as any,
       })
-
       await survey.save()
-
-      if (!data.questions) {
-        data.questions = []
-      }
-      const raw_questions = SurveyQuestionGenerator.transformQuestions(
-        data.questions,
-        survey._id
-      )
-
-      const questions: SurveyQuestion[] = []
-
-      for (let rq of raw_questions) {
-        const q = SurveyQuestion.create(rq)
-
-        await q.save()
-        questions.push(q)
-      }
-
-      survey.questions = questions
-
-      await survey.save()
-
       return res.json(survey)
     } catch (error) {
       console.error(error)
@@ -319,20 +282,20 @@ class SurveyRoutes extends BaseRoute {
       })
     }
 
-    const survey = await Survey.findOne({
-      where: {
-        _id: new ObjectID(id),
-        creatorId: client._id,
+    const survey = await surveyDB.findOne(
+      {
+        _id: id,
+        creator: client._id,
       },
-    })
-
+      {},
+      { populate: 'questions' }
+    )
     if (!survey) {
       return res.status(404).json({
         error: 'Survey Not Found',
       })
     }
-    const surveyWithQuestions = await getSurveyWithQuestions([survey])
-    return res.json(surveyWithQuestions[0])
+    return res.json(survey)
   }
   deleteOne: RequestHandler = async (req: MyRequest, res) => {
     const id = req.params.id as string
@@ -343,33 +306,37 @@ class SurveyRoutes extends BaseRoute {
       })
     }
 
-    const the_survey = await Survey.findOne(id)
+    const survey = await surveyDB.findOne(
+      {
+        _id: id,
+        creator: req.userId as any,
+      },
+      {}
+    )
 
-    if (!the_survey) {
+    if (!survey) {
       return res.status(404).json({
         error: 'Survey Not Found',
       })
     }
 
-    const surveys = await getSurveyWithQuestions([the_survey])
-    const questions = surveys[0].questions.map(s => s._id)
-
+    const questions: string[] = (survey.questions as any) || []
     // const questions = survey.questions
 
     for (let q of questions) {
-      await SurveyQuestion.delete({
-        _id: new ObjectID(q),
-      })
+      await SurveyQuestionDB.deleteOne({
+        _id: q,
+      }).exec()
     }
 
-    const deleted = await the_survey.remove()
+    const deleted = await survey.remove()
 
     return res.json(deleted)
   }
   addSurveyResponse: RequestHandler = async (req, res) => {
     try {
       const id = req.params.id as string
-      const survey = await Survey.findOne(id)
+      const survey = await surveyDB.findById(id)
       if (!survey) {
         res.status(404).json({
           error: 'Survey Not Found',
@@ -390,8 +357,8 @@ class SurveyRoutes extends BaseRoute {
         return
       }
 
-      await SurveyQuestionGenerator.addAnswers(answers)
-
+      await SurveyQuestionGenerator.addAnswers(SurveyQuestionDB, answers)
+      await survey.save()
       res.json(survey)
     } catch (error) {
       console.error(error)

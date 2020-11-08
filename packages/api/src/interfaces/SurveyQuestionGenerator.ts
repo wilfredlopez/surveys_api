@@ -1,15 +1,23 @@
+import {
+  QuestionInput,
+  QuestionType,
+  SurveyQuestion,
+  SurveyResponseInput,
+} from 'shared'
+import { Model } from 'mongoose'
 import { ObjectID } from 'mongodb'
-import { QuestionInput, QuestionType, SurveyResponseInput } from 'shared'
-// import { Model } from 'mongoose'
-import { SurveyQuestion } from '../entities/SurveyQuestion'
-// import { ObjectID } from 'mongodb'
 
-export class SurveyQuestionGenerator extends SurveyQuestion {
-  static transformQuestions(questions: QuestionInput[], surveyId: ObjectID) {
+export class SurveyQuestionGenerator {
+  title: string
+  options: string[]
+  type: QuestionType
+  answers: string[]
+  _id: ObjectID
+  static transformQuestions(questions: QuestionInput[]) {
     const output: SurveyQuestionGenerator[] = []
 
     for (const options of questions) {
-      output.push(new SurveyQuestionGenerator({ ...options, surveyId }))
+      output.push(new SurveyQuestionGenerator(options))
     }
     return output
   }
@@ -32,9 +40,12 @@ export class SurveyQuestionGenerator extends SurveyQuestion {
     return true
   }
 
-  static async addAnswers(inputs: SurveyResponseInput) {
+  static async addAnswers(
+    SurveyQuestionDB: Model<SurveyQuestion>,
+    inputs: SurveyResponseInput
+  ) {
     for (let answer of inputs) {
-      const question = await SurveyQuestion.findOne(answer.questionId)
+      const question = await SurveyQuestionDB.findById(answer.questionId)
       if (question) {
         for (let val of answer.answer) {
           question.answers.push(val)
@@ -48,11 +59,8 @@ export class SurveyQuestionGenerator extends SurveyQuestion {
     options: string[]
     type: QuestionType
     answers?: string[]
-    surveyId: ObjectID
   }) {
-    super()
     this._id = new ObjectID()
-    this.surveyId = props.surveyId
     this.options = props.options
     this.title = props.title
     this.type = props.type

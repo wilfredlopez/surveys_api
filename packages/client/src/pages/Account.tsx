@@ -14,7 +14,7 @@ interface Props {
 
 }
 
-const plans: Plan[] = ['monthly', 'yearly', 'trial']
+const plans: Plan[] = ['monthly', 'yearly']
 
 const prices: Record<Plan, { amount: number, text: string }> = {
     monthly: {

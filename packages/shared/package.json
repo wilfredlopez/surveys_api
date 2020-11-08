@@ -11,8 +11,7 @@
   "author": "Wilfred Lopez",
   "license": "ISC",
   "dependencies": {
-    "@wilfredlopez/react-utils": "^3.0.4",
-    "typeorm": "^0.2.29"
+    "@wilfredlopez/react-utils": "^3.0.4"
   },
   "devDependencies": {
     "typescript": "^4.0.5",

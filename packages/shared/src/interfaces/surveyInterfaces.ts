@@ -1,26 +1,32 @@
-import { UserDB } from './userInterfaces'
-import { BaseEntity } from 'typeorm'
+import { User } from './userInterfaces'
+import { Document } from 'mongoose'
 import { ClientI } from './client.interface'
 import { WithTimeStamps } from './common'
-import { WithId } from './WithId'
-import {
-  QuestionInput,
-  SurveyQuestionClient,
-  SurveyQuestionDB,
-} from './SurveyQuestion'
+
+export type QuestionType = 'multi-choice' | 'single-choice' | 'open-answer'
 
 export interface RawSurvey extends WithTimeStamps {
   name: string
   open: boolean
-  questions: SurveyQuestionDB[]
-  creatorId: UserDB['_id']
-  creator?: UserDB | undefined
+  questions: SurveyQuestion[]
+  creatorId: User['_id']
+  creator?: User | undefined
 }
 
-export interface SurveyDB extends RawSurvey, BaseEntity, WithId {}
+export interface RawSurveyQuestion {
+  title: string
+  options: string[]
+  type: QuestionType
+  answers: string[]
+}
+
+export interface Survey extends RawSurvey, Document {}
 export interface SurveyClient extends Omit<RawSurvey, 'questions'>, ClientI {
   questions: SurveyQuestionClient[]
 }
+
+export interface SurveyQuestion extends RawSurveyQuestion, Document {}
+export interface SurveyQuestionClient extends RawSurveyQuestion, ClientI {}
 
 export interface AnswerInput {
   questionId: string
@@ -37,6 +43,10 @@ export interface OrganizedAnswers {
   answers: AnswerValue[]
 }
 
+export interface QuestionInput extends Omit<RawSurveyQuestion, 'answers'> {
+  answers?: string[]
+}
+
 export type ExpectedCreate = {
   name: RawSurvey['name']
   open: boolean
@@ -45,12 +55,14 @@ export type ExpectedCreate = {
 
 export type SurveyResponseInput = AnswerInput[]
 
-export interface SurveyCreateResponse extends RawSurvey, ClientI {}
+export interface SurveyCreateResponse extends RawSurvey {
+  _id: string
+}
 export interface SurveyCreateResponse {
   error?: string
 }
 
 export type SurveyUnpolulated = Exclude<RawSurvey, 'questions'> & {
-  questions: string[]
   _id: string
+  questions: string[]
 }

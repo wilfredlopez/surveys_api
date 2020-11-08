@@ -1,14 +1,14 @@
 import { API_URL, LOCALSTORAGE_TOKEN } from '../constants'
-import { LoginResponseClient, SuccessLoginClient } from 'shared'
+import { LoginResponse, SuccessLogin } from 'shared'
 import * as H from 'history'
 import RouteGetter from '../RouteGetter'
+import { User } from '../../../shared/dist/interfaces/userInterfaces'
 import {
   UserInput,
   AnswerInput,
   ExpectedCreate,
   SurveyClient,
   SurveyCreateResponse,
-  UserClient,
   SurveyQuestionClient,
   SurveyUnpolulated,
   PlaceOrderRequesInput,
@@ -56,7 +56,7 @@ export default class FetchUtilities {
       headers.set('Authorization', `Bearer ${token}`)
     }
 
-    const data = await wrapFetchPost<UserClient>(`${API_URL}/orders`, info)
+    const data = await wrapFetchPost<User>(`${API_URL}/orders`, info)
 
     return data
   }
@@ -128,7 +128,7 @@ export default class FetchUtilities {
       body: JSON.stringify(input),
     })
 
-    const data = (await res.json()) as LoginResponseClient
+    const data = (await res.json()) as LoginResponse
     if (data.token) {
       localStorage.setItem(LOCALSTORAGE_TOKEN, data.token)
     }
@@ -147,7 +147,7 @@ export default class FetchUtilities {
       }),
     })
 
-    const data = (await res.json()) as LoginResponseClient
+    const data = (await res.json()) as LoginResponse
     if (data.token) {
       localStorage.setItem(LOCALSTORAGE_TOKEN, data.token)
     }
@@ -200,12 +200,12 @@ export default class FetchUtilities {
         Authorization: `Bearer ${token}`,
       },
     })
-    const data = (await res.json()) as LoginResponseClient
+    const data = (await res.json()) as LoginResponse
     if (data.error) {
       throw new Error(data.error)
     }
 
-    return data as SuccessLoginClient
+    return data as SuccessLogin
   }
 
   getToken() {

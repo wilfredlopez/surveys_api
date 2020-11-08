@@ -1,7 +1,5 @@
+import { Document } from 'mongoose'
 import { WithTimeStamps } from './common'
-import { BaseEntity } from 'typeorm'
-import { WithId } from './WithId'
-import { ClientI } from '../../dist/interfaces/client.interface'
 
 export type Plan = 'yearly' | 'monthly' | 'trial'
 
@@ -17,8 +15,10 @@ export interface BaseUser extends WithTimeStamps {
   plan: Plan
 }
 
-export interface UserDB extends BaseUser, BaseEntity, WithId {}
-export interface UserClient extends BaseUser, ClientI {}
+export interface User extends BaseUser, Document {}
+export interface UserClient extends BaseUser {
+  _id: string
+}
 
 export interface UserInput {
   firstname: string
@@ -31,27 +31,16 @@ export interface UserInput {
   plan?: Plan
 }
 
-interface WithUserDB {
-  user: UserDB
-}
-interface WithUserClient {
-  user: UserClient
-}
-export interface SuccessLogin extends WithUserDB {
+export interface SuccessLogin {
+  user: User
   token: string
   error?: string
 }
-export interface SuccessLoginClient
-  extends Omit<SuccessLogin, 'user'>,
-    WithUserClient {}
-export interface ErrorResponseClient
-  extends Omit<ErrorResponse, 'user'>,
-    Partial<WithUserClient> {}
 
-export interface ErrorResponse extends Partial<WithUserDB> {
+export interface ErrorResponse {
+  user?: User
   token?: string
   error: string
 }
 
 export type LoginResponse = SuccessLogin | ErrorResponse
-export type LoginResponseClient = SuccessLoginClient | ErrorResponseClient

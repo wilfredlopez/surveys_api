@@ -1,8 +1,10 @@
 import Gravatar from 'gravatar'
+
+import { BaseUser, UserInput, utils } from 'shared'
 import { ObjectID } from 'mongodb'
-import { BaseUser, UserInput, SharedUtils, UserDB, Plan } from 'shared'
-// import { ObjectID } from 'mongodb'
 import apiUtils from '../utils'
+import { Plan } from 'shared'
+import { User } from '../../../shared/dist/interfaces/userInterfaces'
 
 export class UserHelper implements BaseUser {
   _id: ObjectID
@@ -15,9 +17,10 @@ export class UserHelper implements BaseUser {
   publicKey: string
   privateKey: string
   plan: Plan
-  static isValidUserInput = SharedUtils.isValidUserInput
 
-  static hasValidPlan(user: UserDB) {
+  static isValidUserInput = utils.isValidUserInput
+
+  static hasValidPlan(user: User) {
     if (!user.plan) {
       return false
     }

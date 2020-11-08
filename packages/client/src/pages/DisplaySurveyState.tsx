@@ -31,8 +31,6 @@ const DisplaySurveysState = (_: Props) => {
         }
         const surveys = await fetchSurveys({ publicKey: history.state.publicKey })
 
-        console.log({ surveys })
-
         if (surveys) {
             dispatch({
                 type: 'setSurveys',

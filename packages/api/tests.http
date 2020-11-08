@@ -35,7 +35,7 @@ content-type: application/json
 {
   "firstname": "wilfred",
   "lastname": "lopez",
-  "email": "test2@test.com",
+  "email": "test3@test.com",
   "password": "password",
   "isAdmin": true
 
@@ -47,10 +47,8 @@ Authorization: Bearer {{Token}}
 
 
 ### Make User Admin (Only Admins can do it)
-POST  http://localhost:5200/users/admin/5fa711ab4b999d0153b662fe
+POST  http://localhost:5200/users/admin/5f9ef1963be0bf002ac9e95a
 Authorization: Bearer {{Token}}
-
-
 
 #************************#
         #SURVEYS#
@@ -65,7 +63,6 @@ GET http://localhost:5200/surveys?publicKey=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
 
 
 ###  GET ALL Surveys
-
 GET http://localhost:5200/all/surveys/
 Authorization: Bearer {{Token}}
 
