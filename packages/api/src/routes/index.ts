@@ -5,11 +5,13 @@ import { authMiddleware } from '../middleware/authMiddleware'
 import { ensureAuthenticated } from '../middleware/ensureAuth'
 import { ensureAdmin } from '../middleware/ensureAdmin'
 import orderRoutes from './orders/index'
+import { customRequestMiddlewares } from '../middleware/customRequestMiddlewares'
 
 const routes = Router()
 
+//Adding Dataloaders
+routes.use(customRequestMiddlewares)
 routes.use(authMiddleware)
-
 /**
  * AUTH
  */

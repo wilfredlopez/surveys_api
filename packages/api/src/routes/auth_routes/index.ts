@@ -4,6 +4,7 @@ import utils from '../../utils/index'
 import userDb from '../../db/userDb'
 import MyRequest from '../../interfaces/MyRequest'
 import { BaseRoute } from '../BaseRoute'
+// import { ObjectID } from 'mongodb'
 
 interface UserWithToken {
   user: User
@@ -24,8 +25,10 @@ class AuthRoutes extends BaseRoute {
   me: RequestHandler<{}, LoginResponse> = async (req: MyRequest, res) => {
     const userId = req.userId
     if (userId) {
+      // const id = new ObjectID(userId)
+
       try {
-        const user = await userDb.findById(userId)
+        const user = await req.dataloaders!.userLoader.load(userId)
         if (!user) {
           return res.status(404).json({
             error: 'User Not Found.',

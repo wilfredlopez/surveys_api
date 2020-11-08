@@ -4,6 +4,7 @@ import cors from 'cors'
 
 const app = express()
 
+//Middlewares
 app.use(
   express.urlencoded({
     extended: false,
