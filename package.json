@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "workspaces": ["packages/shared", "packages/api", "packages/client"],
+  "scripts": {
+    "build": "yarn build-shared && yarn build-api",
+    "build-shared": "cd packages/shared && yarn build",
+    "build-api": "cd packages/api && yarn build",
+    "build-client": "cd packages/client && yarn build",
+    "start": "yarn build && cd packages/api && yarn start"
+  }
+}

@@ -1,0 +1,148 @@
+
+### TEST
+GET http://localhost:5200/
+
+#************************#
+##### AUTH #####
+#************************#
+@Token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZmE3NGI2NWVkNWM3ODAxMDQ3NmNhNzciLCJlbWFpbCI6InRlc3RAdGVzdC5jb20iLCJpYXQiOjE2MDQ4MDc3MzksImV4cCI6MTYwNDg5NDEzOX0.DQNQtkYtXKsnVvhEP6HHq776gs8LX9HRGhxT4J8NHf4
+
+
+###  ME
+GET http://localhost:5200/me/
+Authorization: Bearer {{Token}}
+
+###  ALL USERS
+GET http://localhost:5200/users/all
+Authorization: Bearer {{Token}}
+
+
+###  Login
+
+POST  http://localhost:5200/login/ HTTP/1.1
+content-type: application/json
+
+{
+  "email": "test@test.com",
+  "password": "password"
+}
+
+###  Register
+POST  http://localhost:5200/register/ HTTP/1.1
+content-type: application/json
+
+
+{
+  "firstname": "wilfred",
+  "lastname": "lopez",
+  "email": "test2@test.com",
+  "password": "password",
+  "isAdmin": true
+
+}
+
+###  Remove User (Only Admins or Same User Can do)
+DELETE  http://localhost:5200/users/5f9ef1963be0bf002ac9e95a
+Authorization: Bearer {{Token}}
+
+
+### Make User Admin (Only Admins can do it)
+POST  http://localhost:5200/users/admin/5fa711ab4b999d0153b662fe
+Authorization: Bearer {{Token}}
+
+
+
+#************************#
+        #SURVEYS#
+#************************#
+###  My Surveys
+GET http://localhost:5200/mysurveys/
+Authorization: Bearer {{Token}}
+
+
+###  GET OPEN Surveys
+GET http://localhost:5200/surveys?publicKey=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZjllZjE5NjNiZTBiZjAwMmFjOWU5NWEiLCJlbWFpbCI6InRlc3RAdGVzdC5jb20iLCJpYXQiOjE2MDQzNDQ1MDEsImV4cCI6MTYwNjkzNjUwMX0.i3yfVowHy952xlPzv-SK9A5vdpppQAS1XYegbRmiqDw
+
+
+###  GET ALL Surveys
+
+GET http://localhost:5200/all/surveys/
+Authorization: Bearer {{Token}}
+
+###  GET ONE Survey
+GET http://localhost:5200/surveys/5f9ef1bd3be0bf002ac9e95e
+
+
+###  CREATE SURVEY
+POST  http://localhost:5200/surveys/ HTTP/1.1
+content-type: application/json
+Authorization: Bearer {{Token}}
+
+{
+  "name": "Lets Talk About Javascript",
+  "questions": [{
+    "title": "What is the most common javascript method?", 
+    "options": ["toLowerCase", "parseInt", "toString"],
+    "type": "single-choice"
+  },{
+    "title": "Whats your Favorite Framework or Library?", 
+    "options": ["React", "Vue", "Angular"],
+    "type": "single-choice"
+  }]
+}
+
+
+### Add Survey Questions
+POST  http://localhost:5200/surveys/5fa039a4b1a7f8011193501a
+content-type: application/json
+Authorization: Bearer {{Token}}
+
+{
+  "questions":   [
+    {"title": "new Junk",
+    "options": ["Yes", "No"],
+    "type": "open-answer"
+    }
+    ]
+}
+###  UPDATE SURVEY
+
+POST  http://localhost:5200/surveys/5f9ae1bf880d870073763c68
+content-type: application/json
+Authorization: Bearer {{Token}}
+
+{
+  "open": true
+}
+
+
+###  UPDATE SURVEY QUESTION
+
+POST  http://localhost:5200/surveys/5f9ef1bd3be0bf002ac9e95e/question/5f9ef1bc3be0bf002ac9e95c
+content-type: application/json
+Authorization: Bearer {{Token}}
+
+{
+  "type": "open-answer"
+}
+
+###  Delete One SURVEY
+
+DELETE   http://localhost:5200/surveys/5fa01c1afb64eb00358c45c2
+content-type: application/json
+Authorization: Bearer {{Token}}
+
+### Delete One Survey Question
+DELETE   http://localhost:5200/questions/5fa039afb1a7f8011193501b
+content-type: application/json
+Authorization: Bearer {{Token}}
+
+### ADD ANSWERS TO SURVEY
+POST  http://localhost:5200/surveys/answer/5fa01c1afb64eb00358c45c2
+content-type: application/json
+
+[{
+    "questionId": "5fa01e6e7a570100403d4e05",
+    "answer": ["something else"]
+  }]
+
