@@ -47,6 +47,17 @@ async function wrapFetchGet<Returning extends any>(url: string) {
 }
 
 export default class FetchUtilities {
+  async deleteSurvey(surveyId: string) {
+    const res = await fetch(`${API_URL}/surveys/${surveyId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${this.getToken()}`,
+      },
+    })
+    const data = await res.json()
+    return data
+  }
   async placeOrder(info: PlaceOrderRequesInput) {
     const token = localStorage.getItem(LOCALSTORAGE_TOKEN)
     const headers = new Headers()

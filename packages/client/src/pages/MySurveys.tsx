@@ -1,5 +1,5 @@
 import React from 'react'
-import { Container, Box, Typography, Button, ButtonGroup } from '@material-ui/core'
+import { Container, Box, Typography, Button, ButtonGroup, List } from '@material-ui/core'
 import fetchUtils from '../fetchUtils/index'
 import { SurveyUnpolulated } from 'shared'
 import { useHistory } from 'react-router-dom'
@@ -8,6 +8,7 @@ import useProtectedRoute from '../hooks/useProtectedRoute'
 import UnstyledLink from '../components/shared/UnstyledLink'
 import { useBoolean, useEffectOnce } from 'react-use-light'
 import { UserClient } from '../../../shared/dist/interfaces/userInterfaces'
+import ButtonFlex from '../styles/ButtonFlex'
 
 interface Props {
 
@@ -32,12 +33,12 @@ const MySurveys = (props: Props) => {
             {surveys.length === 0 && <div>
                 <p>No Surveys Yet. <UnstyledLink to={RouteGetter.path('create-survey')} color="blue">Create a new one</UnstyledLink></p>
             </div>}
-            <ol>
+            <List>
 
                 {surveys.map((sur, index) => {
                     return <li key={sur._id}><UserSurvey user={user} survey={sur} index={index} /></li>
                 })}
-            </ol>
+            </List>
 
         </Container>
     )
@@ -46,6 +47,7 @@ const MySurveys = (props: Props) => {
 const UserSurvey = ({ survey, user }: { survey: SurveyUnpolulated, index: number, user: UserClient }) => {
     const history = useHistory()
     const [open, setOpen] = useBoolean(survey.open)
+    const [show, setShow] = useBoolean(true)
     function toogleOpen() {
 
         fetchUtils.updatedSurvey(survey._id, {
@@ -61,6 +63,19 @@ const UserSurvey = ({ survey, user }: { survey: SurveyUnpolulated, index: number
         })
     }
 
+    function handleDelete() {
+        console.log('deleting', survey._id)
+        fetchUtils.deleteSurvey(survey._id)
+            .then(res => {
+                console.log(res)
+                setShow(false)
+            }).catch(e => {
+                console.log(e)
+
+            })
+
+
+    }
 
     function copyLink() {
         const root = window.location.host
@@ -68,6 +83,10 @@ const UserSurvey = ({ survey, user }: { survey: SurveyUnpolulated, index: number
         const link = RouteGetter.path('one-survey', { id: survey._id, publicKey: user.publicKey })
         // navigator.clipboard.writeText(`survey/${user.publicKey}/${survey._id}`)
         navigator.clipboard.writeText(`${prot}//${root}${link}`)
+    }
+
+    if (!show) {
+        return null
     }
 
     return <Box mb={3}>
@@ -83,7 +102,8 @@ const UserSurvey = ({ survey, user }: { survey: SurveyUnpolulated, index: number
                     <ButtonGroup>
 
                         <Button size="small" variant="outlined" onClick={toogleOpen}>Toggle Open</Button>
-                        <Button size="small" variant="outlined" color="primary" onClick={() => {
+                        <ButtonFlex color="outlined-error" size="small" variant="outlined" onClick={handleDelete}>DELETE</ButtonFlex>
+                        <Button size="small" variant="outlined" color='secondary' onClick={() => {
                             history.push(RouteGetter.path('update-survey', { id: survey._id }))
                         }}>Edit</Button>
                         <Button onClick={copyLink}>Copy Link</Button>

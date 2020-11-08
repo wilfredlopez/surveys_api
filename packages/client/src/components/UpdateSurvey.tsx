@@ -222,7 +222,6 @@ const UpdateSurvey = ({ survey }: Props) => {
             type: 'multi-choice',
             answers: [],
             _id: '',
-            surveyId: survey._id
         }
         const updated = [...questions]
         updated.push(q)

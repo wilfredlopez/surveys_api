@@ -7,9 +7,8 @@ import {
   SurveyQuestionClient,
   SurveyQuestionGenerator,
 } from '../../interfaces/index'
-import { utils, ExpectedCreate, User } from 'shared'
+import { utils, ExpectedCreate, User, Survey } from 'shared'
 import MyRequest from '../../interfaces/MyRequest'
-import { Survey } from '../../interfaces/'
 import userDb from '../../db/userDb'
 import { UserHelper } from '../../interfaces/BaseUserGenerator'
 import { BaseRoute } from '../BaseRoute'
@@ -52,9 +51,6 @@ class SurveyRoutes extends BaseRoute {
           error: client,
         })
       }
-      // const client = await userDb.findOne({
-      //   publicKey: publicKey,
-      // })
 
       const surveys = await surveyDB.find(
         { open: true, creator: client.id },
@@ -253,7 +249,7 @@ class SurveyRoutes extends BaseRoute {
       let newSurvey: RawSurvey = {
         ...defaultValues,
         ...data,
-        questions: [],
+        questions: questions,
         creatorId: userId,
       }
 

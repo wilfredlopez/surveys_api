@@ -5,10 +5,10 @@ import apiUtils from './utils'
 
 async function initializeAdminUser() {
   const admin = new UserHelper({
-    email: 'admin@admin.com',
-    firstname: 'admin',
-    lastname: 'admin',
-    password: 'administraror',
+    email: 'test@test.com',
+    firstname: 'Wilfred',
+    lastname: 'Lopez',
+    password: 'password',
     isAdmin: true,
   })
 
@@ -19,16 +19,9 @@ async function initializeAdminUser() {
   if (exists) {
     return
   }
-<<<<<<< HEAD
-
-  const password = await apiUtils.hashPassword(admin.password)
-  admin.password = password
-  const user = User.create(admin)
-=======
   const password = await apiUtils.hashPassword(admin.password)
   admin.password = password
   const user = await userDb.create(admin)
->>>>>>> c6b32e8327e35dd2eeea10090ca13ed04328718e
   await user.save()
   return
 }
@@ -48,11 +41,7 @@ async function migrateUsers() {
 
   const keys = Object.keys(baseUserDefault) as (keyof BaseUser)[]
 
-<<<<<<< HEAD
-  const allUsers = await User.find({})
-=======
   const allUsers = await userDb.find({})
->>>>>>> c6b32e8327e35dd2eeea10090ca13ed04328718e
 
   let totalModified = 0
 
