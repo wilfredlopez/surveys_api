@@ -5,13 +5,16 @@
   "main": "dist/index.js",
   "scripts": {
     "start": "node dist/index.js",
-    "dev": "ts-node-dev --poll --respawn --clear --project tsconfig.json ./src/index.ts",
+    "dev": "ts-node-dev --poll --respawn ./src/index.ts",
     "build": "tsc --build tsconfig.json"
   },
   "keywords": [],
   "author": "Wilfred Lopez",
   "license": "ISC",
   "dependencies": {
+    "@mikro-orm/core": "^4.2.3",
+    "@mikro-orm/mongo-highlighter": "^1.0.0",
+    "@mikro-orm/mongodb": "^4.2.3",
     "@wilfredlopez/fake-db": "^2.0.0",
     "@wilfredlopez/react-utils": "^3.0.4",
     "bcryptjs": "^2.4.3",
@@ -20,6 +23,7 @@
     "dataloader": "^2.0.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "express-promise-router": "^4.0.1",
     "gravatar": "^1.8.1",
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.6.2",
@@ -37,5 +41,12 @@
     "ts-node": "^9.0.0",
     "ts-node-dev": "^1.0.0",
     "typescript": "^4.0.3"
+  },
+  "mikro-orm": {
+    "useTsNode": true,
+    "configPaths": [
+      "./src/mikro-orm.config.ts",
+      "./dist/mikro-orm.config.js"
+    ]
   }
 }
