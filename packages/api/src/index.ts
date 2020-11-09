@@ -14,12 +14,11 @@ const options: mongoose.ConnectionOptions = {
 
 mongoose
   .connect(MONGOURL, options)
-  .then(() => {
+  .then(async () => {
     console.log('MongoDB Ready')
+    await initializers()
     app.listen(PORT, () => {
       console.log(`App ready. Listening on port ${PORT}`)
-
-      initializers()
     })
   })
   .catch(e => {

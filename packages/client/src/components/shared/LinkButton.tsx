@@ -4,23 +4,32 @@ import ButtonFlex, { ButtonFlexProps } from '../../styles/ButtonFlex'
 
 interface Props extends ButtonFlexProps {
     to: string
-    withPadding?: boolean
+    noPadding?: boolean
     inline?: boolean
     bold?: boolean
+    normalCase?: boolean
 }
 
-const LinkButton = ({ to, children, inline = false, withPadding = false, bold, color = 'text-inherit', ...buttonProps }: Props) => {
+const LinkButton = ({ to, children, inline = false, noPadding = false, bold, normalCase, color = 'text-inherit', ...buttonProps }: Props) => {
+    const styles: React.CSSProperties = {
+        padding: noPadding ? 0 : undefined,
+        margin: "auto",
+        minWidth: "initial",
+        display: inline ? 'contents' : undefined,
+        fontWeight: bold ? 'bold' : undefined
+    }
+
+    if (normalCase) {
+        styles.textTransform = 'none'
+    }
+
     return <UnstyledLink to={to}>
         <ButtonFlex
             color={color}
             {...buttonProps} style={{
+                ...styles,
                 ...buttonProps.style,
-                padding: !withPadding ? 0 : undefined,
-                margin: "auto",
-                textTransform: "none",
-                minWidth: "initial",
-                display: inline ? 'contents' : undefined,
-                fontWeight: bold ? 'bold' : undefined
+
             }} >
             {children}
         </ButtonFlex>

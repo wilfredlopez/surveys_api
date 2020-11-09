@@ -1,5 +1,5 @@
 import { NextFunction, Response } from 'express'
-import MyRequest from '../interfaces/MyRequest'
+import MyRequest from '../interfaces'
 import findWithBearerToken from './findWithBearerToken'
 
 //WITH THIS METHOD THE USER NEEDS TO SEND THE HEADER "Authorization": "Bearer accesstokenhere"

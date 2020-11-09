@@ -2,7 +2,7 @@ import { API_URL, LOCALSTORAGE_TOKEN } from '../constants'
 import { LoginResponse, SuccessLogin } from 'shared'
 import * as H from 'history'
 import RouteGetter from '../RouteGetter'
-import { User } from '../../../shared/dist/interfaces/userInterfaces'
+import { UserClient } from 'shared'
 import {
   UserInput,
   AnswerInput,
@@ -67,7 +67,7 @@ export default class FetchUtilities {
       headers.set('Authorization', `Bearer ${token}`)
     }
 
-    const data = await wrapFetchPost<User>(`${API_URL}/orders`, info)
+    const data = await wrapFetchPost<UserClient>(`${API_URL}/orders`, info)
 
     return data
   }

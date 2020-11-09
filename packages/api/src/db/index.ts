@@ -1,3 +1,3 @@
-export { default as surveysDB } from './surveysDB'
-export { default as userDb } from './userDb'
-export { default as SurveyQuestionDB } from './SurveyQuestionDB'
+export { default as Survey } from './Survey'
+export { default as User } from './User'
+export { default as SurveyQuestion } from './SurveyQuestion'

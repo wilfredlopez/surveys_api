@@ -1,4 +1,4 @@
-import { FormControl, FormHelperText, Input, InputLabel, Container, Box } from '@material-ui/core'
+import { FormControl, FormHelperText, Input, InputLabel, Container, Box, Typography } from '@material-ui/core'
 import React from 'react'
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles'
 import { Validator } from '@wilfredlopez/react-utils'
@@ -118,6 +118,8 @@ const Login = (_: Props) => {
 
     return (
         <Container maxWidth="sm">
+            <br />
+            <Typography variant="h4" align="center" component="h1">Login</Typography>
             <form className={classes.root} onSubmit={handleSubmit}>
                 <FormControl>
                     <InputLabel htmlFor="email-input">Email</InputLabel>

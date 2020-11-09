@@ -4,7 +4,7 @@ import React from 'react'
 import { useHistory } from 'react-router-dom'
 import fetchUtils from '../fetchUtils/index'
 import useProtectedRoute from '../hooks/useProtectedRoute'
-import { ExpectedCreate, QuestionType, SurveyClient, SurveyQuestionClient, utils } from 'shared'
+import { ExpectedCreate, QuestionType, SurveyClient, SurveyQuestionClient, SharedUtils } from 'shared'
 import RouteGetter from '../RouteGetter'
 interface Props {
     survey: SurveyClient
@@ -40,7 +40,7 @@ function isSurveyQuestionInput(quests?: SurveyQuestionClient[]) {
         return false
     }
     for (let q of quests) {
-        if (!utils.isValidQuestionType(q.type)) {
+        if (!SharedUtils.isValidQuestionType(q.type)) {
             return false
         }
         if (!Validator.isNotEmptyString(q.title)) {
@@ -103,26 +103,15 @@ const UpdateSurvey = ({ survey }: Props) => {
     })
     const classes = useStyles()
     const [questions, setQuestions] = React.useState<SurveyQuestionClient[]>(survey.questions)
-
-
     const history = useHistory()
-
-
 
     function resetForm() {
         setQuestions(survey.questions)
         setName(survey.name)
     }
 
-
-
-
-
-
     function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
-
-
 
         const updatedSurvey: SurveyClient = {
             ...survey,
@@ -155,9 +144,9 @@ const UpdateSurvey = ({ survey }: Props) => {
             })
             resetForm()
             setTimeout(() => {
-                history.replace(RouteGetter.path('answers', { id: res._id }))
+                history.replace(RouteGetter.path('my-surveys'))
 
-            }, 3000)
+            }, 1000)
 
 
         }).catch((e: unknown) => {

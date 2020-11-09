@@ -14,7 +14,7 @@ interface Props {
 
 export const SurveyComponent = ({ survey, number }: Props) => {
     const [answers, setAnswers] = React.useState<AnswerInput[]>([])
-    const { actionCreators } = useAppContext()
+    const { actionCreators, user } = useAppContext()
     const history = useHistory()
 
     function handleAnswes(value: string, questionId: string, questionType: QuestionType) {
@@ -70,10 +70,11 @@ export const SurveyComponent = ({ survey, number }: Props) => {
 
                     <Button disabled={isDisabled} variant="contained" color="primary" onClick={handleAnswer}>Submit your answers</Button>
                     <span className="left-separator"></span>
-                    {/* <Link to={`/anwers/${survey._id}`}> */}
-                    <Link to={RouteGetter.path('answers', { id: survey._id })}>
-                        <Button variant="outlined">Answers</Button>
-                    </Link>
+                    {user &&
+                        <Link to={RouteGetter.path('answers', { id: survey._id })}>
+                            <Button variant="outlined">Answers</Button>
+                        </Link>
+                    }
                 </div>
             </div>
 

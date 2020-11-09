@@ -1,7 +1,7 @@
-import { userDb } from './db'
-import { BaseUser } from './interfaces'
-import { UserHelper } from './interfaces/BaseUserGenerator'
-import apiUtils from './utils'
+import { User } from './db'
+import { BaseUser } from 'shared'
+import { UserHelper } from './helpers/UserHelper'
+import apiUtils from './apiUtils'
 
 async function initializeAdminUser() {
   const admin = new UserHelper({
@@ -12,7 +12,7 @@ async function initializeAdminUser() {
     isAdmin: true,
   })
 
-  const exists = await userDb.exists({
+  const exists = await User.exists({
     email: admin.email,
   })
 
@@ -21,7 +21,7 @@ async function initializeAdminUser() {
   }
   const password = await apiUtils.hashPassword(admin.password)
   admin.password = password
-  const user = await userDb.create(admin)
+  const user = await User.create(admin)
   await user.save()
   return
 }
@@ -41,7 +41,7 @@ async function migrateUsers() {
 
   const keys = Object.keys(baseUserDefault) as (keyof BaseUser)[]
 
-  const allUsers = await userDb.find({})
+  const allUsers = await User.find({})
 
   let totalModified = 0
 

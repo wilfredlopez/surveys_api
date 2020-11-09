@@ -1,5 +1,5 @@
 import { Response, NextFunction } from 'express'
-import MyRequest from '../interfaces/MyRequest'
+import MyRequest from '../interfaces'
 
 export function ensureAuthenticated(
   req: MyRequest,

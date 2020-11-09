@@ -8,6 +8,7 @@ import { useLocation } from 'react-router-dom'
 import LinkButton from '../components/shared/LinkButton'
 import RouteGetter from '../RouteGetter'
 import ButtonFlex from '../styles/ButtonFlex'
+import UnstyledLink from '../components/shared/UnstyledLink'
 
 interface Props {
 
@@ -49,9 +50,18 @@ const DisplaySurveysState = (_: Props) => {
             <Card>
                 <CardContent>
                     <CardHeader
-                        title={<Typography variant="h4" component="h1" align="center">Please verify your link.</Typography>}
+                        title={<Typography variant="h4" component="h1" align="center">Public Key Restriction</Typography>
+                        }
                         action={<LinkButton color="text-info" to={RouteGetter.path('home')}>Back Home</LinkButton>}
                     />
+                    <Typography gutterBottom>
+                        Please verify that your link is authorized.
+                    </Typography>
+                    <Typography>
+                        Are you registered?
+                        <br />
+                        <UnstyledLink color="blue" to={RouteGetter.path('login')}>Login</UnstyledLink>
+                    </Typography>
                 </CardContent>
             </Card>
             <br />

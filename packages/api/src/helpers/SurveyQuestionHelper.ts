@@ -1,23 +1,18 @@
-import {
-  QuestionInput,
-  QuestionType,
-  SurveyQuestion,
-  SurveyResponseInput,
-} from 'shared'
-import { Model } from 'mongoose'
+import { QuestionInput, QuestionType, SurveyResponseInput } from 'shared'
 import { ObjectID } from 'mongodb'
+import SurveyQuestion from '../db/SurveyQuestion'
 
-export class SurveyQuestionGenerator {
+export class SurveyQuestionHelper {
   title: string
   options: string[]
   type: QuestionType
   answers: string[]
   _id: ObjectID
   static transformQuestions(questions: QuestionInput[]) {
-    const output: SurveyQuestionGenerator[] = []
+    const output: SurveyQuestionHelper[] = []
 
     for (const options of questions) {
-      output.push(new SurveyQuestionGenerator(options))
+      output.push(new SurveyQuestionHelper(options))
     }
     return output
   }
@@ -40,12 +35,9 @@ export class SurveyQuestionGenerator {
     return true
   }
 
-  static async addAnswers(
-    SurveyQuestionDB: Model<SurveyQuestion>,
-    inputs: SurveyResponseInput
-  ) {
+  static async addAnswers(inputs: SurveyResponseInput) {
     for (let answer of inputs) {
-      const question = await SurveyQuestionDB.findById(answer.questionId)
+      const question = await SurveyQuestion.findById(answer.questionId)
       if (question) {
         for (let val of answer.answer) {
           question.answers.push(val)

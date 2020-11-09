@@ -1,14 +1,13 @@
 import {
-  SurveyQuestionClient,
   AnswerValue,
   OrganizedAnswers,
-  QuestionType,
   ExpectedCreate,
 } from './surveyInterfaces'
+import { QuestionType, SurveyQuestionClient } from './SurveyQuestionModel'
 import { UserInput, Plan } from './userInterfaces'
 import { Validator } from '@wilfredlopez/react-utils'
 
-export class utils {
+export class SharedUtils {
   static isString = (id?: string) => typeof id === 'string' && id.trim() !== ''
   static isSurveyQuestionInput(quests?: SurveyQuestionClient[]) {
     if (!Array.isArray(quests)) {
@@ -18,10 +17,10 @@ export class utils {
       return false
     }
     for (let q of quests) {
-      if (!utils.isValidQuestionType(q.type)) {
+      if (!SharedUtils.isValidQuestionType(q.type)) {
         return false
       }
-      if (!utils.isString(q.title)) {
+      if (!SharedUtils.isString(q.title)) {
         return false
       }
       if (!Array.isArray(q.options)) {
@@ -124,8 +123,8 @@ export class utils {
 
   static validateCreate(data: ExpectedCreate): [key: string, result: boolean] {
     const expected: { [K in keyof ExpectedCreate]: (data: any) => boolean } = {
-      name: utils.isString,
-      questions: utils.isSurveyQuestionInput,
+      name: SharedUtils.isString,
+      questions: SharedUtils.isSurveyQuestionInput,
       open: () => true,
     }
     let val: any

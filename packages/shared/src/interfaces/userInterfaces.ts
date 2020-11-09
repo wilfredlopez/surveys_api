@@ -15,7 +15,7 @@ export interface BaseUser extends WithTimeStamps {
   plan: Plan
 }
 
-export interface User extends BaseUser, Document {}
+export interface UserModel extends BaseUser, Document {}
 export interface UserClient extends BaseUser {
   _id: string
 }
@@ -32,13 +32,13 @@ export interface UserInput {
 }
 
 export interface SuccessLogin {
-  user: User
+  user: UserModel
   token: string
   error?: string
 }
 
 export interface ErrorResponse {
-  user?: User
+  user?: UserModel
   token?: string
   error: string
 }

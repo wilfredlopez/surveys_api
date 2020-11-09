@@ -11,6 +11,7 @@ const routes = Router()
 
 //Adding Dataloaders
 routes.use(customRequestMiddlewares)
+//Adding req.userId
 routes.use(authMiddleware)
 /**
  * AUTH

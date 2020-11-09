@@ -12,7 +12,7 @@ const ButtonFlex = ({ color, children, disableUppercase, ...buttonProps }: Butto
     const className = color ? classes[color] : ""
     const variant = matchToVariant(color)
     let styles: React.CSSProperties = {
-
+        textTransform: 'uppercase'
     }
     if (disableUppercase) {
         styles.textTransform = 'inherit'

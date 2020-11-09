@@ -14,7 +14,7 @@ interface Props {
 
 }
 
-const plans: Plan[] = ['monthly', 'yearly']
+const plans: Plan[] = ['monthly', 'yearly', 'trial']
 
 const prices: Record<Plan, { amount: number, text: string }> = {
     monthly: {
@@ -44,11 +44,15 @@ export const Account = (props: Props) => {
 
     function handleSubmit(e: React.FormEvent) {
         e.preventDefault()
+        if (selectedPlan === 'trial') {
+            return
+        }
         console.log(selectedPlan)
         setShowOrderComponent(true)
     }
 
     const isSamePlan = selectedPlan === user.plan
+    const hasPlanError = isSamePlan || selectedPlan === 'trial'
 
     const prot = window.location.protocol
     const key = `${prot}//${window.location.host}${RouteGetter.path('display-surveys', { publicKey: user.publicKey })}`
@@ -99,11 +103,11 @@ export const Account = (props: Props) => {
                     </List>
                 </CardContent>
                 <CardActions id="account-action-grid">
-                    <LinkButton fullWidth to={RouteGetter.path('create-survey')} color="contained-success" size="small" withPadding>Create Survey</LinkButton>
+                    <LinkButton fullWidth to={RouteGetter.path('create-survey')} color="contained-success" size="small" >Create Survey</LinkButton>
 
-                    <LinkButton fullWidth to={RouteGetter.path('display-surveys', { publicKey: user.publicKey })} color="contained-success" size="small" withPadding>Views Surveys</LinkButton>
+                    <LinkButton fullWidth to={RouteGetter.path('display-surveys', { publicKey: user.publicKey })} color="contained-success" size="small">Views Surveys</LinkButton>
 
-                    <LinkButton fullWidth to={RouteGetter.path('edit-surveys')} color="contained-success" size="small" withPadding>Edit Surveys</LinkButton>
+                    <LinkButton fullWidth to={RouteGetter.path('my-surveys')} color="contained-success" size="small">Edit Surveys</LinkButton>
 
                     <ButtonFlex onClick={() => dispatch({ type: 'logout' })} color="outlined-warning" size="small" disableUppercase  >Logout</ButtonFlex>
 
@@ -128,11 +132,13 @@ export const Account = (props: Props) => {
 
 
                             <FormControl>
-                                <InputLabel filled htmlFor="plan-input"
-                                    error={isSamePlan}
+                                <InputLabel color="secondary" filled htmlFor="plan-input"
                                 >Plan {selectedPlan} {isSamePlan && "(Current)"}</InputLabel>
                                 <Select id="plan-Select" value={selectedPlan} onChange={(e) => setSelectedPlan(e.target.value as any)}>
                                     {plans.map(p => {
+                                        if (user.plan && user.plan !== 'trial' && p === 'trial') {
+                                            return null
+                                        }
                                         return <MenuItem key={p + "plan-key"} value={p}>{p}</MenuItem>
                                     })}
 
@@ -152,7 +158,7 @@ export const Account = (props: Props) => {
 
                         <div>
 
-                            <Button disabled={isSamePlan} type="submit">Upgrade</Button>
+                            <Button disabled={hasPlanError} type="submit">Upgrade</Button>
                         </div>
                     </CardActions>
                 </Card>

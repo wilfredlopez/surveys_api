@@ -1,13 +1,13 @@
 import { Response, NextFunction } from 'express'
-import MyRequest from '../interfaces/MyRequest'
-import userDb from '../db/userDb'
+import MyRequest from '../interfaces'
+import User from '../db/User'
 
 export async function ensureAdmin(
   req: MyRequest,
   res: Response,
   next: NextFunction
 ) {
-  const admin = await userDb.findOne({
+  const admin = await User.findOne({
     _id: req.userId,
   })
   if (admin && admin.isAdmin) {

@@ -1,5 +1,5 @@
 import { NextFunction, Response } from 'express'
-import MyRequest from '../interfaces/MyRequest'
+import MyRequest from '../interfaces'
 import { DatabaseLoaders } from '../database-loaders/DatabaseLoaders'
 
 const databaseLoaders = new DatabaseLoaders()

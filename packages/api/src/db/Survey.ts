@@ -1,9 +1,9 @@
 import mongoose, { Schema } from 'mongoose'
-import { Survey } from 'shared'
+import { SurveyModel } from 'shared'
 
-const SurveySchema: Schema = new Schema<Survey>(
+const SurveySchema: Schema = new Schema<SurveyModel>(
   {
-    name: { type: String, required: true },
+    name: { type: String, required: true, index: true },
     open: { type: Boolean, default: false },
     creatorId: { type: Schema.Types.ObjectId, required: true },
     creator: { type: Schema.Types.ObjectId, required: true, ref: 'User' },
@@ -14,6 +14,6 @@ const SurveySchema: Schema = new Schema<Survey>(
   }
 )
 
-const surveyDB = mongoose.model<Survey>('Survey', SurveySchema)
+const Survey = mongoose.model<SurveyModel>('Survey', SurveySchema)
 
-export default surveyDB
+export default Survey

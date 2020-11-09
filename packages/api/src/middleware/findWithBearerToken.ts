@@ -1,5 +1,5 @@
 import { Request } from 'express'
-import utils from '../utils'
+import apiUtils from '../apiUtils'
 
 export default function findWithBearerToken(req: Request) {
   const bearerBeader = req.headers['authorization']
@@ -15,7 +15,7 @@ export default function findWithBearerToken(req: Request) {
         return null
       }
 
-      return utils.verifyToken(accessToken)
+      return apiUtils.verifyToken(accessToken)
     } catch {
       return null
     }

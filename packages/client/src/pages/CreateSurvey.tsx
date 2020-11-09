@@ -1,6 +1,6 @@
 import { Button, Card, CardActions, CardContent, CardHeader, Checkbox, Container, FormControl, FormControlLabel, FormGroup, Input, InputLabel, makeStyles, MenuItem, Select, TextField, Typography } from '@material-ui/core'
 import React from 'react'
-import { ExpectedCreate, utils, QuestionInput, QuestionType } from 'shared'
+import { ExpectedCreate, SharedUtils, QuestionInput, QuestionType } from 'shared'
 import fetchUtils from '../fetchUtils/index'
 import { useHistory } from 'react-router-dom'
 import RouteGetter from '../RouteGetter'
@@ -91,7 +91,7 @@ const CreateSurvey = (_: Props) => {
             open: autoOpen,
             questions: questions,
         }
-        const [error, isValid] = utils.validateCreate(survey)
+        const [error, isValid] = SharedUtils.validateCreate(survey)
         if (!isValid) {
             setMessage({
                 text: error,
@@ -268,6 +268,7 @@ const CreateSurvey = (_: Props) => {
                         </Card>
                     </div>
                 })}
+                <br />
                 <Button size="small" variant="outlined" onClick={() => addEmptyQuestion()} >Add More Questions</Button>
                 <FormGroup>
                     <br />

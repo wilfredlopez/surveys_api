@@ -69,7 +69,7 @@ const HomePage = (_: Props) => {
                                         to={RouteGetter.path('register')}
                                         size='small'
                                         color='contained-primary'
-                                        withPadding
+
                                     >
                                         Register now
                   </LinkButton>
@@ -105,7 +105,7 @@ const HomePage = (_: Props) => {
                                     to={RouteGetter.path('login')}
                                     color='contained-primary'
                                     size='small'
-                                    withPadding
+
                                 >
                                     Login
                 </LinkButton>

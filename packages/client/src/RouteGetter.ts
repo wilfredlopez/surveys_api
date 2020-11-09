@@ -8,65 +8,14 @@ type RouteKeys =
   | 'register'
   | 'account'
   | 'create-survey'
-  | 'edit-surveys'
+  | 'my-surveys'
   | 'update-survey'
   | 'display-surveys'
   | 'display-surveys-state'
   | 'one-survey'
   | 'one-survey-state'
-interface AppRoutes extends RouterGetterRecord<RouteKeys> {
-  home: {
-    value: string
-  }
-  answers: {
-    value: string
-    params: {
-      id: string
-    }
-  }
-  login: {
-    value: string
-  }
-  register: {
-    value: string
-  }
-  account: {
-    value: string
-  }
-  'display-surveys': {
-    value: string
-    params: {
-      publicKey: string
-    }
-  }
-  'create-survey': {
-    value: string
-  }
-  'edit-surveys': {
-    value: string
-  }
-  'update-survey': {
-    value: string
-    params: {
-      id: string
-    }
-  }
-  'display-surveys-state': {
-    value: string
-  }
-  'one-survey': {
-    value: string
-    params: {
-      publicKey: string
-      id: string
-    }
-  }
-  'one-survey-state': {
-    value: string
-  }
-}
 
-export const RouteGetter = new RouteGetterGenerator<RouteKeys, AppRoutes>({
+const routes: RouterGetterRecord<RouteKeys> = {
   home: {
     value: '/',
   },
@@ -88,7 +37,7 @@ export const RouteGetter = new RouteGetterGenerator<RouteKeys, AppRoutes>({
   'create-survey': {
     value: '/create-survey',
   },
-  'edit-surveys': {
+  'my-surveys': {
     value: '/account/my-surveys',
   },
   'update-survey': {
@@ -116,6 +65,11 @@ export const RouteGetter = new RouteGetterGenerator<RouteKeys, AppRoutes>({
   'one-survey-state': {
     value: '/survey',
   },
-})
+}
+
+export const RouteGetter = new RouteGetterGenerator<
+  RouteKeys,
+  RouterGetterRecord<RouteKeys>
+>(routes)
 
 export default RouteGetter

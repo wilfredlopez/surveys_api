@@ -40,7 +40,7 @@ export const AppRoutes = (props: Props) => {
                 <Route path={RouteGetter.path('register')} component={Register} />
                 <Route path={RouteGetter.path('account')} component={Account} exact />
                 <Route path={RouteGetter.path('create-survey')} component={CreateSurvey} />
-                <Route path={RouteGetter.path('edit-surveys')} component={MySurveys} />
+                <Route path={RouteGetter.path('my-surveys')} component={MySurveys} />
                 <Route path={RouteGetter.path('update-survey')} component={UpdateSurveyPage} />
                 <Route path={'*'} component={NotFoundPage} />
             </Switch>

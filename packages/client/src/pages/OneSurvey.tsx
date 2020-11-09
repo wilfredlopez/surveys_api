@@ -6,7 +6,7 @@ import { SurveySkeleton } from '../components/skeletons/SurveySkeleton'
 import SurveyComponent from '../components/SurveyComponent'
 import { useAppContext } from '../context/AppContext'
 import RouteGetter from '../RouteGetter'
-import { Container, Card, CardContent, CardHeader, Typography, Box } from '@material-ui/core'
+import { Container, Card, CardContent, CardHeader, Typography } from '@material-ui/core'
 import { SurveyClient } from '../../../shared/dist/interfaces/surveyInterfaces'
 
 interface Props {
@@ -84,9 +84,7 @@ export const OneSurveyState = (props: Props) => {
 
     return (
         <Container>
-            <Box display="flex" alignItems="center" justifyContent="space-between">
-                <h1>Survey</h1>
-            </Box>
+            <br />
             {error && <div><p style={{ color: 'red' }}>{error.message}</p></div>}
             {loading && <SurveySkeleton />}
             {!loading && (!survey) && <div>

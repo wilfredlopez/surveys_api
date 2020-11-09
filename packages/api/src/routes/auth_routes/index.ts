@@ -1,13 +1,14 @@
 import { RequestHandler } from 'express'
-import { UserHelper, User, UserInput } from '../../interfaces'
-import utils from '../../utils/index'
-import userDb from '../../db/userDb'
-import MyRequest from '../../interfaces/MyRequest'
+import { UserHelper } from '../../helpers'
+import { UserModel, UserInput } from 'shared'
+import apiUtils from '../../apiUtils/index'
+import User from '../../db/User'
+import MyRequest from '../../interfaces'
 import { BaseRoute } from '../BaseRoute'
 // import { ObjectID } from 'mongodb'
 
 interface UserWithToken {
-  user: User
+  user: UserModel
   token: string
 }
 
@@ -19,7 +20,7 @@ export type LoginResponse = UserWithToken | ErrorResponse
 
 class AuthRoutes extends BaseRoute {
   allUsers: RequestHandler = async (_req, res) => {
-    const users = await userDb.find({})
+    const users = await User.find({})
     res.json(users)
   }
   me: RequestHandler<{}, LoginResponse> = async (req: MyRequest, res) => {
@@ -28,7 +29,7 @@ class AuthRoutes extends BaseRoute {
       // const id = new ObjectID(userId)
 
       try {
-        const user = await req.dataloaders!.userLoader.load(userId)
+        const user = await req.dataloaders!.loaders.userLoader.load(userId)
         if (!user) {
           return res.status(404).json({
             error: 'User Not Found.',
@@ -62,9 +63,11 @@ class AuthRoutes extends BaseRoute {
       return this.unauthorizedReturn(res)
     }
 
-    const user = await userDb.findOne({
-      _id: id,
-    })
+    const user = await req.dataloaders!.loaders.userLoader.load(id)
+
+    // const user = await User.findOne({
+    //   _id: id,
+    // })
 
     if (!user) {
       return res.status(404).json({
@@ -72,7 +75,7 @@ class AuthRoutes extends BaseRoute {
       })
     }
 
-    function isAdminOrIsSameUser(user: User, id: string) {
+    function isAdminOrIsSameUser(user: UserModel, id: string) {
       if (!user) {
         return false
       }
@@ -102,14 +105,14 @@ class AuthRoutes extends BaseRoute {
         })
       }
 
-      const user = await userDb.findOne({ email: data.email })
+      const user = await User.findOne({ email: data.email })
       if (!user) {
         return res.status(404).json({
           error: 'User not found.',
         })
       }
 
-      const isValidPassword = await utils.isValidPassword(
+      const isValidPassword = await apiUtils.isValidPassword(
         data.password,
         user.password
       )
@@ -118,7 +121,7 @@ class AuthRoutes extends BaseRoute {
         return this.unauthorizedReturn(res)
       }
 
-      const { accessToken } = utils.createToken(user)
+      const { accessToken } = apiUtils.createToken(user)
 
       return res.json({
         user: user,
@@ -145,14 +148,15 @@ class AuthRoutes extends BaseRoute {
         )
       }
 
-      const client = await userDb.findOne({ _id: id })
+      // const client = await User.findOne({ _id: id })
+      const client = await req.dataloaders!.loaders.userLoader.load(id)
       if (!client) {
         return res.status(404).json({
           error: 'Client not found.',
         })
       }
 
-      const { privateKey, publicKey } = utils.createClientKeys(
+      const { privateKey, publicKey } = apiUtils.createClientKeys(
         client._id,
         client.email
       )
@@ -178,9 +182,12 @@ class AuthRoutes extends BaseRoute {
     res
   ) => {
     const id = req.params.id
-    const administrator = await userDb.findOne({
-      _id: req.userId,
-    })
+    const administrator = await req.dataloaders!.loaders.userLoader.load(
+      req.userId!
+    )
+    // const administrator = await User.findOne({
+    //   _id: req.userId,
+    // })
 
     if (!administrator || !administrator.isAdmin) {
       return this.unauthorizedReturn(
@@ -190,9 +197,10 @@ class AuthRoutes extends BaseRoute {
     }
 
     try {
-      const user = await userDb.findOne({
-        _id: id,
-      })
+      const user = await req.dataloaders!.loaders.userLoader.load(id)
+      // const user = await User.findOne({
+      //   _id: id,
+      // })
       if (!user) {
         return res.json({
           error: 'User Not Found.',
@@ -230,9 +238,9 @@ class AuthRoutes extends BaseRoute {
       data.plan = 'trial'
       const rawUser = new UserHelper(data)
       await rawUser.hashPassword()
-      const user = await userDb.create(rawUser)
+      const user = await User.create(rawUser)
       await user.save()
-      const { accessToken } = utils.createToken(user)
+      const { accessToken } = apiUtils.createToken(user)
       return res.json({
         user: user,
         token: accessToken,

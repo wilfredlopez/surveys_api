@@ -1,32 +1,24 @@
-import { User } from './userInterfaces'
+import { UserModel } from './userInterfaces'
 import { Document } from 'mongoose'
-import { ClientI } from './client.interface'
-import { WithTimeStamps } from './common'
-
-export type QuestionType = 'multi-choice' | 'single-choice' | 'open-answer'
+import { WithTimeStamps, ClientI } from './common'
+import {
+  QuestionInput,
+  SurveyQuestionModel,
+  SurveyQuestionClient,
+} from './SurveyQuestionModel'
 
 export interface RawSurvey extends WithTimeStamps {
   name: string
   open: boolean
-  questions: SurveyQuestion[]
-  creatorId: User['_id']
-  creator?: User | undefined
+  questions: SurveyQuestionModel[]
+  creatorId: UserModel['_id']
+  creator?: UserModel | undefined
 }
 
-export interface RawSurveyQuestion {
-  title: string
-  options: string[]
-  type: QuestionType
-  answers: string[]
-}
-
-export interface Survey extends RawSurvey, Document {}
+export interface SurveyModel extends RawSurvey, Document {}
 export interface SurveyClient extends Omit<RawSurvey, 'questions'>, ClientI {
   questions: SurveyQuestionClient[]
 }
-
-export interface SurveyQuestion extends RawSurveyQuestion, Document {}
-export interface SurveyQuestionClient extends RawSurveyQuestion, ClientI {}
 
 export interface AnswerInput {
   questionId: string
@@ -41,10 +33,6 @@ export interface AnswerValue {
 export interface OrganizedAnswers {
   total: number
   answers: AnswerValue[]
-}
-
-export interface QuestionInput extends Omit<RawSurveyQuestion, 'answers'> {
-  answers?: string[]
 }
 
 export type ExpectedCreate = {

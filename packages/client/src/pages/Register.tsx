@@ -7,6 +7,7 @@ import { Redirect, useHistory } from 'react-router-dom'
 import RouteGetter from '../RouteGetter'
 import { useAppContext } from '../context/AppContext'
 import { makeStyles } from '@material-ui/core/styles'
+import LinkButton from '../components/shared/LinkButton'
 
 const useStyles = makeStyles({
     formGroup: {
@@ -135,6 +136,9 @@ const Register = (_: Props) => {
                     <FormHelperText variant="filled" error>{resultHandle.errorMessage}</FormHelperText>
                 </div>
             </form>
+            <FormGroup className={classes.formGroup}>
+                <LinkButton to={RouteGetter.path('login')} color='outlined-secondary' fullWidth>Login instead</LinkButton>
+            </FormGroup>
         </Container>
     )
 }

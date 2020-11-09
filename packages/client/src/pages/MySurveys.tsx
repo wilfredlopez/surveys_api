@@ -77,12 +77,16 @@ const UserSurvey = ({ survey, user }: { survey: SurveyUnpolulated, index: number
 
     }
 
+    function getLink() {
+        return RouteGetter.path('one-survey', { id: survey._id, publicKey: user.publicKey })
+    }
+
     function copyLink() {
         const root = window.location.host
         const prot = window.location.protocol
-        const link = RouteGetter.path('one-survey', { id: survey._id, publicKey: user.publicKey })
-        // navigator.clipboard.writeText(`survey/${user.publicKey}/${survey._id}`)
-        navigator.clipboard.writeText(`${prot}//${root}${link}`)
+        const link = getLink()
+
+        navigator.clipboard.writeText(`${prot}/${root}${link}`)
     }
 
     if (!show) {
@@ -94,19 +98,21 @@ const UserSurvey = ({ survey, user }: { survey: SurveyUnpolulated, index: number
 
             <Typography>
 
+                <UnstyledLink to={getLink()} color="blue">
 
-                {survey.name} (open: {open ? 'Yes' : "No"}) - {survey._id}
+                    <b> {survey.name} </b>(open: {open ? 'Yes' : "No"})
+            </UnstyledLink>
             </Typography>
             <Box ml={2}>
                 <Box display="flex" padding="0 8px">
                     <ButtonGroup>
 
                         <Button size="small" variant="outlined" onClick={toogleOpen}>Toggle Open</Button>
-                        <ButtonFlex color="outlined-error" size="small" variant="outlined" onClick={handleDelete}>DELETE</ButtonFlex>
+                        <Button onClick={copyLink}>Copy Link</Button>
                         <Button size="small" variant="outlined" color='secondary' onClick={() => {
                             history.push(RouteGetter.path('update-survey', { id: survey._id }))
                         }}>Edit</Button>
-                        <Button onClick={copyLink}>Copy Link</Button>
+                        <ButtonFlex color="outlined-error" size="small" variant="outlined" onClick={handleDelete}>DELETE</ButtonFlex>
                     </ButtonGroup>
                 </Box>
             </Box>

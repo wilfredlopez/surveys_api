@@ -1,10 +1,10 @@
 import { RequestHandler } from 'express'
-import userDb from '../../db/userDb'
-import MyRequest from '../../interfaces/MyRequest'
+import User from '../../db/User'
+import MyRequest from '../../interfaces/'
 import { BaseRoute } from '../BaseRoute'
 import { validateBillingInfo } from 'shared'
 import { PlaceOrderRequesInput } from 'shared'
-import { utils } from 'shared'
+import { SharedUtils } from 'shared'
 
 class OrderRoutes extends BaseRoute {
   placeOrder: RequestHandler = async (
@@ -17,7 +17,7 @@ class OrderRoutes extends BaseRoute {
     }
 
     try {
-      const user = await userDb.findById(userId)
+      const user = await User.findById(userId)
       if (!user) {
         return this.notFoundError(res, 'User Not Found')
       }
@@ -32,7 +32,7 @@ class OrderRoutes extends BaseRoute {
                 }`,
         })
       }
-      if (!utils.isValidPlan(data.plan)) {
+      if (!SharedUtils.isValidPlan(data.plan)) {
         return res.status(400).json({
           error: `Invalid Plan`,
         })

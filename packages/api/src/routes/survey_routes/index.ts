@@ -1,16 +1,12 @@
 import { RequestHandler, Request } from 'express'
-import SurveyQuestionDB from '../../db/SurveyQuestionDB'
-import { RawSurvey } from '../../interfaces'
-import surveyDB from '../../db/surveysDB'
-import { SurveyResponseInput } from '../../interfaces/index'
-import {
-  SurveyQuestionClient,
-  SurveyQuestionGenerator,
-} from '../../interfaces/index'
-import { utils, ExpectedCreate, User, Survey } from 'shared'
-import MyRequest from '../../interfaces/MyRequest'
-import userDb from '../../db/userDb'
-import { UserHelper } from '../../interfaces/BaseUserGenerator'
+import SurveyQuestion from '../../db/SurveyQuestion'
+import { RawSurvey, SurveyResponseInput, SurveyQuestionClient } from 'shared'
+import Survey from '../../db/Survey'
+import { SurveyQuestionHelper } from '../../helpers'
+import { SharedUtils, ExpectedCreate, UserModel, SurveyModel } from 'shared'
+import MyRequest from '../../interfaces'
+import User from '../../db/User'
+import { UserHelper } from '../../helpers/UserHelper'
 import { BaseRoute } from '../BaseRoute'
 
 function deleteProp<T extends {} = any>(obj: T, key: keyof T) {
@@ -19,17 +15,17 @@ function deleteProp<T extends {} = any>(obj: T, key: keyof T) {
   }
 }
 
-export type SurveyCreateResponse = Survey | { error: string }
+export type SurveyCreateResponse = SurveyModel | { error: string }
 
 class SurveyRoutes extends BaseRoute {
-  async validateClientKey(req: Request): Promise<string | User> {
+  async validateClientKey(req: Request): Promise<string | UserModel> {
     const publicKey = req.query.publicKey as string | undefined
 
     if (!publicKey) {
       return 'publicKey Most be sent with the request.'
     }
 
-    const client = await userDb.findOne({
+    const client = await User.findOne({
       publicKey: publicKey,
     })
 
@@ -52,7 +48,7 @@ class SurveyRoutes extends BaseRoute {
         })
       }
 
-      const surveys = await surveyDB.find(
+      const surveys = await Survey.find(
         { open: true, creator: client.id },
         {},
         { populate: 'questions' }
@@ -73,7 +69,7 @@ class SurveyRoutes extends BaseRoute {
 
   mySurveys: RequestHandler = async (req: MyRequest, res) => {
     const id = req.userId
-    const surveys = await surveyDB.find(
+    const surveys = await Survey.find(
       { creatorId: id },
       {}
       // { populate: 'questions' }
@@ -83,7 +79,7 @@ class SurveyRoutes extends BaseRoute {
   }
   getAll: RequestHandler = async (_req, res) => {
     try {
-      const surveys = await surveyDB.find({}, {}, { populate: 'creator' })
+      const surveys = await Survey.find({}, {}, { populate: 'creator' })
 
       return res.json({
         surveys: surveys,
@@ -97,8 +93,8 @@ class SurveyRoutes extends BaseRoute {
     }
   }
 
-  updateQuestion: RequestHandler<{ id: string; questionId: string }> = async (
-    req,
+  updateQuestion: RequestHandler<any> = async (
+    req: MyRequest<{ id: string; questionId: string }>,
     res
   ) => {
     try {
@@ -106,7 +102,11 @@ class SurveyRoutes extends BaseRoute {
       const questionId = req.params.questionId
       const body = req.body as Partial<SurveyQuestionClient>
 
-      const question = await SurveyQuestionDB.findById(questionId)
+      const question = await req.dataloaders!.loaders.surveyQuestionLoader.load(
+        questionId
+      )
+
+      // const question = await SurveyQuestion.findById(questionId)
       if (!question) {
         return res.json({ error: 'Survey Not Found' })
       }
@@ -117,7 +117,11 @@ class SurveyRoutes extends BaseRoute {
           },
         })
         .exec()
-      return res.json(await SurveyQuestionDB.findById(questionId))
+
+      // return res.json(await SurveyQuestion.findById(questionId))
+      return res.json(
+        await req.dataloaders!.loaders.surveyQuestionLoader.load(questionId)
+      )
     } catch (error) {
       console.error(error)
       return res.status(500).json({
@@ -128,10 +132,12 @@ class SurveyRoutes extends BaseRoute {
 
   deleteQuestionFromSurvey: RequestHandler<{
     qid: string
-  }> = async (req, res) => {
+  }> = async (req: MyRequest<{ qid: string }>, res) => {
     const { qid } = req.params
-
-    const question = await SurveyQuestionDB.findById(qid)
+    const question = await req.dataloaders!.loaders.surveyQuestionLoader.load(
+      qid
+    )
+    // const question = await SurveyQuestion.findById(qid)
 
     if (!question) {
       return res.json({
@@ -152,7 +158,7 @@ class SurveyRoutes extends BaseRoute {
       }
 
       if (valuesToUpdate.questions) {
-        if (!utils.isSurveyQuestionInput(valuesToUpdate.questions)) {
+        if (!SharedUtils.isSurveyQuestionInput(valuesToUpdate.questions)) {
           res.status(400).json({
             error: 'Invalid Questions input.',
           })
@@ -168,11 +174,11 @@ class SurveyRoutes extends BaseRoute {
           const ExistingQuestions = (valuesToUpdate.questions as SurveyQuestionClient[]).filter(
             q => !isInvalidID(q._id)
           )
-          const raw_questions = SurveyQuestionGenerator.transformQuestions(
+          const raw_questions = SurveyQuestionHelper.transformQuestions(
             nonExistingQuestions
           )
 
-          const questions = await SurveyQuestionDB.create(raw_questions)
+          const questions = await SurveyQuestion.create(raw_questions)
           if (questions) {
             for (const q of questions) {
               q.save()
@@ -184,7 +190,7 @@ class SurveyRoutes extends BaseRoute {
         }
       }
 
-      const updated = await surveyDB.updateOne(
+      const updated = await Survey.updateOne(
         { _id: id },
         { $set: valuesToUpdate }
       )
@@ -195,7 +201,7 @@ class SurveyRoutes extends BaseRoute {
         })
         return
       }
-      res.json(await surveyDB.findById(id))
+      res.json(await Survey.findById(id))
     } catch (error) {
       console.error(error)
       res.status(500).json({
@@ -215,14 +221,14 @@ class SurveyRoutes extends BaseRoute {
         data.open = false
       }
 
-      const [error, isValidData] = utils.validateCreate(data)
+      const [error, isValidData] = SharedUtils.validateCreate(data)
       if (!isValidData) {
         return res.status(400).json({
           error: error,
         })
       }
 
-      const exists = await surveyDB.findOne({
+      const exists = await Survey.findOne({
         name: data.name,
       })
 
@@ -232,14 +238,14 @@ class SurveyRoutes extends BaseRoute {
         })
       }
 
-      const raw_questions = SurveyQuestionGenerator.transformQuestions(
+      const raw_questions = SurveyQuestionHelper.transformQuestions(
         data.questions
       )
 
       const defaultValues = {
         open: false,
       }
-      const questions = await SurveyQuestionDB.create(raw_questions)
+      const questions = await SurveyQuestion.create(raw_questions)
       for (const q of questions) {
         q.save()
       }
@@ -253,7 +259,7 @@ class SurveyRoutes extends BaseRoute {
         creatorId: userId,
       }
 
-      const survey = await surveyDB.create({
+      const survey = await Survey.create({
         ...newSurvey,
         creatorId: userId,
         creator: userId as any,
@@ -278,7 +284,7 @@ class SurveyRoutes extends BaseRoute {
       })
     }
 
-    const survey = await surveyDB.findOne(
+    const survey = await Survey.findOne(
       {
         _id: id,
         creator: client._id,
@@ -302,7 +308,7 @@ class SurveyRoutes extends BaseRoute {
       })
     }
 
-    const survey = await surveyDB.findOne(
+    const survey = await Survey.findOne(
       {
         _id: id,
         creator: req.userId as any,
@@ -320,7 +326,7 @@ class SurveyRoutes extends BaseRoute {
     // const questions = survey.questions
 
     for (let q of questions) {
-      await SurveyQuestionDB.deleteOne({
+      await SurveyQuestion.deleteOne({
         _id: q,
       }).exec()
     }
@@ -332,7 +338,7 @@ class SurveyRoutes extends BaseRoute {
   addSurveyResponse: RequestHandler = async (req, res) => {
     try {
       const id = req.params.id as string
-      const survey = await surveyDB.findById(id)
+      const survey = await Survey.findById(id)
       if (!survey) {
         res.status(404).json({
           error: 'Survey Not Found',
@@ -341,7 +347,7 @@ class SurveyRoutes extends BaseRoute {
       }
       const answers = req.body as SurveyResponseInput
 
-      if (SurveyQuestionGenerator.isValidAnswerInput(answers) === false) {
+      if (SurveyQuestionHelper.isValidAnswerInput(answers) === false) {
         res.status(400).json({
           error: `Invalid request. Please send an array with {
           questionId: string
@@ -353,7 +359,7 @@ class SurveyRoutes extends BaseRoute {
         return
       }
 
-      await SurveyQuestionGenerator.addAnswers(SurveyQuestionDB, answers)
+      await SurveyQuestionHelper.addAnswers(answers)
       await survey.save()
       res.json(survey)
     } catch (error) {

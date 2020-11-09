@@ -1,10 +1,9 @@
-import { User } from '../interfaces/'
+import { UserModel, Plan } from 'shared'
 import mongoose, { Schema } from 'mongoose'
-import { Plan } from 'shared'
 
 const PlanEnum: Plan[] = ['monthly', 'yearly', 'trial']
 
-const UserSchema: Schema = new Schema<User>(
+const UserSchema: Schema = new Schema<UserModel>(
   {
     email: { type: String, required: true, unique: true },
     publicKey: { type: String, required: true },
@@ -21,6 +20,6 @@ const UserSchema: Schema = new Schema<User>(
   }
 )
 
-const userDb = mongoose.model<User>('User', UserSchema)
+const User = mongoose.model<UserModel>('User', UserSchema)
 
-export default userDb
+export default User
