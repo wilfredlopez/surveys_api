@@ -68,7 +68,7 @@ const HomePage = (_: Props) => {
                                     <LinkButton
                                         to={RouteGetter.path('register')}
                                         size='small'
-                                        color='contained-primary'
+                                        color='containedPrimary'
 
                                     >
                                         Register now
@@ -103,7 +103,7 @@ const HomePage = (_: Props) => {
                             <Typography align='right'>
                                 <LinkButton
                                     to={RouteGetter.path('login')}
-                                    color='contained-primary'
+                                    color='containedPrimary'
                                     size='small'
 
                                 >
@@ -145,7 +145,7 @@ const HomePage = (_: Props) => {
                                                     Yearly Plan - $100/y{' '}
                                                     <IconButtonFlex
                                                         onClick={redirectToPath}
-                                                        color='contained-success'
+                                                        color='containedSuccess'
                                                         edge='end'
                                                         title='Yearly Plan - $100/y'
                                                     >
@@ -161,7 +161,7 @@ const HomePage = (_: Props) => {
                                                     <IconButtonFlex
                                                         edge='end'
                                                         onClick={redirectToPath}
-                                                        color='contained-success'
+                                                        color='containedSuccess'
                                                         title='Monthly Plan - $10/m'
                                                     >
                                                         <AddShoppingCart />

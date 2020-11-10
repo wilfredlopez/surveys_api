@@ -10,7 +10,7 @@ interface Props extends ButtonFlexProps {
     normalCase?: boolean
 }
 
-const LinkButton = ({ to, children, inline = false, noPadding = false, bold, normalCase, color = 'text-inherit', ...buttonProps }: Props) => {
+const LinkButton = ({ to, children, inline = false, noPadding = false, bold, normalCase, color = "textDefault", ...buttonProps }: Props) => {
     const styles: React.CSSProperties = {
         padding: noPadding ? 0 : undefined,
         margin: "auto",

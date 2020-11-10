@@ -112,7 +112,7 @@ const UserSurvey = ({ survey, user }: { survey: SurveyUnpolulated, index: number
                         <Button size="small" variant="outlined" color='secondary' onClick={() => {
                             history.push(RouteGetter.path('update-survey', { id: survey._id }))
                         }}>Edit</Button>
-                        <ButtonFlex color="outlined-error" size="small" variant="outlined" onClick={handleDelete}>DELETE</ButtonFlex>
+                        <ButtonFlex color="outlinedError" size="small" variant="outlined" onClick={handleDelete}>DELETE</ButtonFlex>
                     </ButtonGroup>
                 </Box>
             </Box>

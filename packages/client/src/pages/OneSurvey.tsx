@@ -68,7 +68,7 @@ export const OneSurveyState = (props: Props) => {
                 <CardContent>
                     <CardHeader
                         title={<Typography variant="h4" component="h1" align="center">Please verify your link.</Typography>}
-                        action={<LinkButton color="text-info" to={RouteGetter.path('home')}>Back Home</LinkButton>}
+                        action={<LinkButton color="textInfo" to={RouteGetter.path('home')}>Back Home</LinkButton>}
                     />
                 </CardContent>
             </Card>

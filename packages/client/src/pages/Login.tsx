@@ -145,7 +145,9 @@ const Login = (_: Props) => {
                     <FormHelperText error>{errorMessage}</FormHelperText>
                 </div>
                 <Box display="flex" justifyContent="space-between" mt={2}>
-                    <ButtonFlex type="submit" disabled={isButtonDisabled} color="contained-info">Login</ButtonFlex>
+                    <ButtonFlex type="submit" disabled={isButtonDisabled} color="containedInfo">Login</ButtonFlex>
+
+
                     <UnstyledLink to={RouteGetter.path('register')} color="blue">Create your Account</UnstyledLink>
                 </Box>
             </form>

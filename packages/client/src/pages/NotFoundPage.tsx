@@ -29,7 +29,7 @@ const NotFoundPage = (props: Props) => {
                 </CardContent>
                 <CardActions>
 
-                    <LinkButton color="text-primary" to={RouteGetter.path('home')}>Return Home</LinkButton>
+                    <LinkButton color="textPrimary" to={RouteGetter.path('home')}>Return Home</LinkButton>
                 </CardActions>
             </Card>
         </Container>

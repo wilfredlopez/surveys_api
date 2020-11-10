@@ -52,7 +52,7 @@ const DisplaySurveysState = (_: Props) => {
                     <CardHeader
                         title={<Typography variant="h4" component="h1" align="center">Public Key Restriction</Typography>
                         }
-                        action={<LinkButton color="text-info" to={RouteGetter.path('home')}>Back Home</LinkButton>}
+                        action={<LinkButton color="textInfo" to={RouteGetter.path('home')}>Back Home</LinkButton>}
                     />
                     <Typography gutterBottom>
                         Please verify that your link is authorized.
@@ -92,7 +92,7 @@ const DisplaySurveysState = (_: Props) => {
                 <h1>Surveys</h1>
                 <Box mx={2}>
 
-                    <ButtonFlex onClick={refetch} color="outlined-info" size="small">Refetch</ButtonFlex>
+                    <ButtonFlex onClick={refetch} color="outlinedInfo" size="small">Refetch</ButtonFlex>
                 </Box>
             </Box>
             {(!openSurveys || openSurveys.length === 0) && error && <div><p style={{ color: 'red' }}>{error.message}</p></div>}

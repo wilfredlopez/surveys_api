@@ -37,8 +37,8 @@ export default function AppMenu() {
               Reactive Surveys
           </UnstyledLink>
           </Typography>
-          {user ? <LinkButton color="text-inherit" to={RouteGetter.path('account')} bold>{user.firstname.toUpperCase()}</LinkButton> :
-            <LinkButton color='text-inherit' to={RouteGetter.path('login')} bold>LOGIN</LinkButton>
+          {user ? <LinkButton color="textInherit" to={RouteGetter.path('account')} bold>{user.firstname.toUpperCase()}</LinkButton> :
+            <LinkButton color='textInherit' to={RouteGetter.path('login')} bold>LOGIN</LinkButton>
           }
         </Toolbar>
       </AppBar>

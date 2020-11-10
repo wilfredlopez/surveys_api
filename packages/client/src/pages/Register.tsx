@@ -137,7 +137,7 @@ const Register = (_: Props) => {
                 </div>
             </form>
             <FormGroup className={classes.formGroup}>
-                <LinkButton to={RouteGetter.path('login')} color='outlined-secondary' fullWidth>Login instead</LinkButton>
+                <LinkButton to={RouteGetter.path('login')} color='outlinedSecondary' fullWidth>Login instead</LinkButton>
             </FormGroup>
         </Container>
     )

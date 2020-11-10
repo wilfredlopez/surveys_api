@@ -103,13 +103,13 @@ export const Account = (props: Props) => {
                     </List>
                 </CardContent>
                 <CardActions id="account-action-grid">
-                    <LinkButton fullWidth to={RouteGetter.path('create-survey')} color="contained-success" size="small" >Create Survey</LinkButton>
+                    <LinkButton fullWidth to={RouteGetter.path('create-survey')} color="containedSuccess" size="small" >Create Survey</LinkButton>
 
-                    <LinkButton fullWidth to={RouteGetter.path('display-surveys', { publicKey: user.publicKey })} color="contained-success" size="small">Views Surveys</LinkButton>
+                    <LinkButton fullWidth to={RouteGetter.path('display-surveys', { publicKey: user.publicKey })} color="containedSuccess" size="small">Views Surveys</LinkButton>
 
-                    <LinkButton fullWidth to={RouteGetter.path('my-surveys')} color="contained-success" size="small">Edit Surveys</LinkButton>
+                    <LinkButton fullWidth to={RouteGetter.path('my-surveys')} color="containedSuccess" size="small">Edit Surveys</LinkButton>
 
-                    <ButtonFlex onClick={() => dispatch({ type: 'logout' })} color="outlined-warning" size="small" disableUppercase  >Logout</ButtonFlex>
+                    <ButtonFlex onClick={() => dispatch({ type: 'logout' })} color="outlinedWarning" size="small" disableUppercase  >Logout</ButtonFlex>
 
                 </CardActions>
             </Card>
@@ -195,7 +195,7 @@ export const Account = (props: Props) => {
 
                     </Typography>
                     <span className={`key-paragraph show example-link`}>
-                        <ButtonFlex disableUppercase size="small" color="text-info" onClick={() => copyKey()}>
+                        <ButtonFlex disableUppercase size="small" color="textInfo" onClick={() => copyKey()}>
                             {key}
                         </ButtonFlex>
                     </span>
