@@ -1,13 +1,20 @@
 import { Entity, ManyToOne, Property } from "@mikro-orm/core";
-import { QuestionType, RawSurveyQuestion } from "shared";
+import {
+  QuestionType,
+
+  // RawSurveyQuestion,
+  SurveyQuestionModel,
+} from "shared";
 import { BaseEntity } from "./BaseEntity";
 import { Survey } from "./Survey";
+import { OmitParams } from "./OmitParams.type";
 
-interface SI extends Omit<RawSurveyQuestion, "updatedAt" | "createdAt"> {
+export type QuestionConstructor = OmitParams<SurveyQuestionModel> & {
   survey: Survey;
-}
+};
+
 @Entity()
-export class SurveyQuestion extends BaseEntity implements SI {
+export class SurveyQuestion extends BaseEntity implements SurveyQuestionModel {
   @ManyToOne()
   survey: Survey;
   @Property()
@@ -16,7 +23,7 @@ export class SurveyQuestion extends BaseEntity implements SI {
   options: string[];
   @Property()
   type: QuestionType;
-  @Property({ default: [] })
+  @Property({ default: [], persist: true })
   answers: string[];
 
   @Property()
@@ -28,7 +35,7 @@ export class SurveyQuestion extends BaseEntity implements SI {
   @Property()
   metaArrayOfStrings?: string[];
 
-  constructor(data: SI) {
+  constructor(data: QuestionConstructor) {
     super();
     this.answers = data.answers || [];
     this.options = data.options;

@@ -8,10 +8,13 @@ import {
 } from "@mikro-orm/core";
 import cors from "cors";
 
-import Router from "./routes";
 import { SurveyController } from "./controllers";
 import { User, Survey, SurveyQuestion } from "./entities";
 import { UserController } from "./controllers/user.controller";
+import { authMiddleware } from "./middleware/authMiddleware";
+import { SurveyQuestionController } from "./controllers/question.controller";
+import { OrderController } from "./controllers/order.controller";
+import initializers from "./initializers";
 
 export const Repository = {} as {
   orm: MikroORM;
@@ -40,9 +43,11 @@ async function getApp() {
   );
   app.use(express.json());
   app.use(cors({}));
-  app.use((_req, _res, next) => RequestContext.create(Repository.orm.em, next));
 
-  app.use(Router);
+  app.use((_req, _res, next) => RequestContext.create(Repository.orm.em, next));
+  //Adding req.userId
+  app.use(authMiddleware);
+  await initializers();
 
   app.get("/", (_, res) => {
     res.json({
@@ -50,8 +55,10 @@ async function getApp() {
     });
   });
 
-  app.use("/book", SurveyController);
-  app.use("/author", UserController);
+  app.use("/survey", SurveyController);
+  app.use("/user", UserController);
+  app.use("/question", SurveyQuestionController);
+  app.use("/order", OrderController);
   app.use((_req, res) => res.status(404).json({ message: "No route found" }));
   return app;
 }

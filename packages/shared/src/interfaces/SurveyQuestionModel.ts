@@ -1,5 +1,5 @@
-import { ClientI } from './common'
-import { Document } from 'mongoose'
+import { WithIdClient } from './common'
+import { BaseEntityModel } from './BaseEntityModel'
 export type QuestionType = 'multi-choice' | 'single-choice' | 'open-answer'
 
 export interface RawSurveyQuestion {
@@ -9,8 +9,10 @@ export interface RawSurveyQuestion {
   answers: string[]
 }
 
-export interface SurveyQuestionClient extends RawSurveyQuestion, ClientI {}
-export interface SurveyQuestionModel extends RawSurveyQuestion, Document {}
+export interface SurveyQuestionClient extends RawSurveyQuestion, WithIdClient {}
+export interface SurveyQuestionModel
+  extends RawSurveyQuestion,
+    BaseEntityModel {}
 export interface QuestionInput extends Omit<RawSurveyQuestion, 'answers'> {
   answers?: string[]
 }

@@ -73,7 +73,7 @@ let fetched = false
 function ContextGet(context: AppContextState) {
 
     async function execFetch(publicKey: string) {
-        const res = await fetch(API_URL + `/surveys?publicKey=${publicKey}`)
+        const res = await fetch(API_URL + `/survey?publicKey=${publicKey}`)
         const data = await res.json()
         fetched = true
         if (data.error) {

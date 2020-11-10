@@ -7,58 +7,20 @@ GET http://localhost:5200/
 #************************#
 ##### AUTH #####
 #************************#
-@Token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZmE3ODM2ZDk0ZGU5NjAwMzkxYzEwYmEiLCJlbWFpbCI6InRlc3RAdGVzdC5jb20iLCJpYXQiOjE2MDQ4NzQxODMsImV4cCI6MTYwNDk2MDU4M30.k9iq4wZVXMuPdNP6MDuaIpvphWEgBZcAgvYuAlu2o9k
-
-
-POST http://localhost:5200/author
-content-type: application/json
-
-{
-  "firstname": "wilfred",
-  "lastname": "lopez",
-  "email": "test3@test.com",
-  "password": "password",
-  "isAdmin": true
-
-}
-
-### T
-GET http://localhost:5200/book/
-content-type: application/json
-
-###  CREATE SURVEY
-POST  http://localhost:5200/book/ HTTP/1.1
-content-type: application/json
-Authorization: Bearer {{Token}}
-
-{
-  "name": "Lets Talk About Javascript",
-  "creator": "5fa74b65ed5c78010476ca77",
-  "questions": [{
-    "title": "What is the most common javascript method?", 
-    "options": ["toLowerCase", "parseInt", "toString"],
-    "type": "single-choice"
-  },{
-    "title": "Whats your Favorite Framework or Library?", 
-    "options": ["React", "Vue", "Angular"],
-    "type": "single-choice"
-  }]
-}
-
-
+@Token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZmE3NGI2NWVkNWM3ODAxMDQ3NmNhNzciLCJlbWFpbCI6InRlc3RAdGVzdC5jb20iLCJpYXQiOjE2MDQ5NTczNjUsImV4cCI6MTYwNTA0Mzc2NX0.tqRaVYq5PNQQm8-CSwoOdsgBWbFnJ2DbPSI3uYweXIg
 
 ###  ME
-GET http://localhost:5200/me/
+GET http://localhost:5200/user/me/
 Authorization: Bearer {{Token}}
 
 ###  ALL USERS
-GET http://localhost:5200/users/all
+GET http://localhost:5200/user
 Authorization: Bearer {{Token}}
 
 
 ###  Login
 
-POST  http://localhost:5200/login/ HTTP/1.1
+POST  http://localhost:5200/user/login/ HTTP/1.1
 content-type: application/json
 
 {
@@ -80,42 +42,67 @@ content-type: application/json
 
 }
 
+
+### Update User
+PUT  http://localhost:5200/user/5fa74b65ed5c78010476ca77
+content-type: application/json
+Authorization: Bearer {{Token}}
+
+{
+  "avatar": "https://www.gravatar.com/avatar/b642b4217b34b1e8d3bd915fc65c4452"
+}
+
+
+### Update Plan (Only Admins)
+PUT  http://localhost:5200/user/plan/5fa74b65ed5c78010476ca77
+content-type: application/json
+Authorization: Bearer {{Token}}
+
+{
+  "plan": "monthly"
+}
+
+
+
 ###  Remove User (Only Admins or Same User Can do)
-DELETE  http://localhost:5200/users/5f9ef1963be0bf002ac9e95a
+DELETE  http://localhost:5200/user/5fa8e03819f72c0040ba181f
 Authorization: Bearer {{Token}}
 
 
 ### Make User Admin (Only Admins can do it)
-POST  http://localhost:5200/users/admin/5f9ef1963be0bf002ac9e95a
+POST  http://localhost:5200/user/admin/5f9ef1963be0bf002ac9e95a
 Authorization: Bearer {{Token}}
 
 #************************#
         #SURVEYS#
 #************************#
 ###  My Surveys
-GET http://localhost:5200/mysurveys/
+GET http://localhost:5200/survey/mysurveys/
 Authorization: Bearer {{Token}}
+
 
 
 ###  GET OPEN Surveys
-GET http://localhost:5200/surveys?publicKey=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZjllZjE5NjNiZTBiZjAwMmFjOWU5NWEiLCJlbWFpbCI6InRlc3RAdGVzdC5jb20iLCJpYXQiOjE2MDQzNDQ1MDEsImV4cCI6MTYwNjkzNjUwMX0.i3yfVowHy952xlPzv-SK9A5vdpppQAS1XYegbRmiqDw
+GET http://localhost:5200/survey?publicKey=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZmE3NGI2NWVkNWM3ODAxMDQ3NmNhNzciLCJlbWFpbCI6InRlc3RAdGVzdC5jb20iLCJpYXQiOjE2MDQ3OTkzMzMsImV4cCI6MTYwNzM5MTMzM30.M3vbTqMxhY5-7UMJMVUNDOdflyvMuYH4exy1v9Y2bu4
 
 
 ###  GET ALL Surveys
-GET http://localhost:5200/all/surveys/
+GET http://localhost:5200/survey/all/
 Authorization: Bearer {{Token}}
 
+
 ###  GET ONE Survey
-GET http://localhost:5200/surveys/5f9ef1bd3be0bf002ac9e95e
+GET http://localhost:5200/survey/5fa9c0f3827d3b038612ae25?publicKey=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZmE3NGI2NWVkNWM3ODAxMDQ3NmNhNzciLCJlbWFpbCI6InRlc3RAdGVzdC5jb20iLCJpYXQiOjE2MDQ3OTkzMzMsImV4cCI6MTYwNzM5MTMzM30.M3vbTqMxhY5-7UMJMVUNDOdflyvMuYH4exy1v9Y2bu4
 
 
 ###  CREATE SURVEY
-POST  http://localhost:5200/surveys/ HTTP/1.1
+POST  http://localhost:5200/survey/ HTTP/1.1
 content-type: application/json
 Authorization: Bearer {{Token}}
 
 {
-  "name": "Lets Talk About Javascript",
+  "name": "Lets Talk About Javascript 4",
+  "creator": "5fa74b65ed5c78010476ca77",
   "questions": [{
     "title": "What is the most common javascript method?", 
     "options": ["toLowerCase", "parseInt", "toString"],
@@ -143,7 +130,7 @@ Authorization: Bearer {{Token}}
 }
 ###  UPDATE SURVEY
 
-POST  http://localhost:5200/surveys/5f9ae1bf880d870073763c68
+PUT  http://localhost:5200/survey/5fa9c0f3827d3b038612ae25
 content-type: application/json
 Authorization: Bearer {{Token}}
 
@@ -152,33 +139,39 @@ Authorization: Bearer {{Token}}
 }
 
 
+
+### GET ONE QUESTION
+GET http://localhost:5200/question/5fa8e710a7bab800b4434db5
+content-type: application/json
+Authorization: Bearer {{Token}}
+
 ###  UPDATE SURVEY QUESTION
 
-POST  http://localhost:5200/surveys/5f9ef1bd3be0bf002ac9e95e/question/5f9ef1bc3be0bf002ac9e95c
+PUT  http://localhost:5200/question/5fa8e710a7bab800b4434db5
 content-type: application/json
 Authorization: Bearer {{Token}}
 
 {
-  "type": "open-answer"
+  "type": "open-answer",
 }
 
 ###  Delete One SURVEY
 
-DELETE   http://localhost:5200/surveys/5fa01c1afb64eb00358c45c2
+DELETE   http://localhost:5200/survey/5fa74ba1f3f6de010f5a539e
 content-type: application/json
 Authorization: Bearer {{Token}}
 
 ### Delete One Survey Question
-DELETE   http://localhost:5200/questions/5fa039afb1a7f8011193501b
+DELETE   http://localhost:5200/question/5fa8e710a7bab800b4434db5
 content-type: application/json
 Authorization: Bearer {{Token}}
 
 ### ADD ANSWERS TO SURVEY
-POST  http://localhost:5200/surveys/answer/5fa01c1afb64eb00358c45c2
+PUT  http://localhost:5200/survey/answer/5fa9c0f3827d3b038612ae25
 content-type: application/json
 
 [{
-    "questionId": "5fa01e6e7a570100403d4e05",
-    "answer": ["something else"]
+    "questionId": "5fa9c0f3827d3b038612ae27",
+    "answer": ["React"]
   }]
 

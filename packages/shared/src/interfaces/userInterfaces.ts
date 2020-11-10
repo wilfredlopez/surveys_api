@@ -1,9 +1,9 @@
-import { Document } from 'mongoose'
-import { WithTimeStamps } from './common'
+import { WithTimeStampsServer, WithIdClient } from './common'
+import { BaseEntityModel } from './BaseEntityModel'
 
 export type Plan = 'yearly' | 'monthly' | 'trial'
 
-export interface BaseUser extends WithTimeStamps {
+export interface BaseUser extends WithTimeStampsServer {
   firstname: string
   lastname: string
   email: string
@@ -15,10 +15,8 @@ export interface BaseUser extends WithTimeStamps {
   plan: Plan
 }
 
-export interface UserModel extends BaseUser, Document {}
-export interface UserClient extends BaseUser {
-  _id: string
-}
+export interface UserModel extends BaseUser, BaseEntityModel {}
+export interface UserClient extends BaseUser, WithIdClient {}
 
 export interface UserInput {
   firstname: string
@@ -42,5 +40,17 @@ export interface ErrorResponse {
   token?: string
   error: string
 }
+export interface ErrorResponseClient {
+  user?: UserModel
+  token?: string
+  error: string
+}
+
+export interface SuccessLoginClient {
+  user: UserClient
+  token: string
+  error?: string
+}
 
 export type LoginResponse = SuccessLogin | ErrorResponse
+export type LoginResponseClient = SuccessLoginClient | ErrorResponseClient

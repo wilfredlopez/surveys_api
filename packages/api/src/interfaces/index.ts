@@ -1,26 +1,23 @@
-import { Request } from 'express'
-import * as core from 'express-serve-static-core'
+import { Request } from "express";
+// import * as core from "express-serve-static-core";
 
-import { UserModel } from 'shared'
-import { DatabaseLoaders } from '../database-loaders/DatabaseLoaders'
-
+import { User } from "../entities/User";
 export default interface MyRequest<
-  P = core.ParamsDictionary,
+  P = Request["params"],
   ResBody = any,
   ReqBody = any,
-  ReqQuery = core.Query
+  ReqQuery = Request["query"]
 > extends Request<P, ResBody, ReqBody, ReqQuery> {
-  userId?: string
-  email?: string
-  admin?: UserModel
-  dataloaders?: DatabaseLoaders
+  userId?: string;
+  email?: string;
+  admin?: User;
 }
 
 export type NullableRequired<T> = {
-  [P in keyof T]-?: T[P] | null
-}
+  [P in keyof T]-?: T[P] | null;
+};
 
 export type CustomRequestsNullable = NullableRequired<
   Omit<MyRequest, keyof Request>
->
-export type CustomRequestsRequired = Required<Omit<MyRequest, keyof Request>>
+>;
+export type CustomRequestsRequired = Required<Omit<MyRequest, keyof Request>>;

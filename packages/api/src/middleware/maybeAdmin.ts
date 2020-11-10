@@ -2,9 +2,9 @@ import { Response, NextFunction } from "express";
 import MyRequest from "../interfaces";
 import { Repository } from "../app";
 
-export async function ensureAdmin(
+export async function maybeAdmin(
   req: MyRequest,
-  res: Response,
+  _res: Response,
   next: NextFunction
 ) {
   if (req.userId) {
@@ -16,10 +16,5 @@ export async function ensureAdmin(
       return next();
     }
   }
-  return res
-    .status(401)
-    .json({
-      error: "Unauthorized",
-    })
-    .end();
+  return next();
 }

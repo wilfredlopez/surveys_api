@@ -1,5 +1,5 @@
-import { Response, NextFunction } from 'express'
-import MyRequest from '../interfaces'
+import { Response, NextFunction } from "express";
+import MyRequest from "../interfaces";
 
 export function ensureAuthenticated(
   req: MyRequest,
@@ -7,13 +7,13 @@ export function ensureAuthenticated(
   next: NextFunction
 ) {
   if (req.userId) {
-    return next()
+    return next();
   } else {
     res
       .status(401)
       .json({
-        error: 'Unauthorized',
+        error: "Unauthorized",
       })
-      .end()
+      .end();
   }
 }

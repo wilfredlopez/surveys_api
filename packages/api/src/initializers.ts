@@ -1,72 +1,31 @@
-import { User } from './db'
-import { BaseUser } from 'shared'
-import { UserHelper } from './helpers/UserHelper'
-import apiUtils from './apiUtils'
+import apiUtils from "./apiUtils";
+import { Repository } from "./app";
+import { UserHelper } from "./helpers";
 
 async function initializeAdminUser() {
   const admin = new UserHelper({
-    email: 'test@test.com',
-    firstname: 'Wilfred',
-    lastname: 'Lopez',
-    password: 'password',
+    email: "test@test.com",
+    firstname: "Wilfred",
+    lastname: "Lopez",
+    password: "password",
     isAdmin: true,
-  })
-
-  const exists = await User.exists({
+  });
+  const exists = await Repository.userRepository.findOne({
     email: admin.email,
-  })
+  });
 
   if (exists) {
-    return
+    return;
   }
-  const password = await apiUtils.hashPassword(admin.password)
-  admin.password = password
-  const user = await User.create(admin)
-  await user.save()
-  return
-}
-
-async function migrateUsers() {
-  const baseUserDefault: Partial<BaseUser> = {
-    // avatar: '',
-    // email: '',
-    // firstname: '',
-    // lastname: '',
-    // password: '',
-    plan: 'trial',
-    privateKey: 'invalid',
-    publicKey: 'invalid',
-    isAdmin: false,
-  }
-
-  const keys = Object.keys(baseUserDefault) as (keyof BaseUser)[]
-
-  const allUsers = await User.find({})
-
-  let totalModified = 0
-
-  for (let u of allUsers) {
-    let modified = false
-    for (let key of keys) {
-      if (typeof u[key] === 'undefined') {
-        //@ts-ignore
-        u[key] = baseUserDefault[key]!
-        modified = true
-      }
-    }
-
-    if (modified) {
-      totalModified++
-      await u.save()
-    }
-  }
-  if (totalModified) {
-    console.log({ usersModified: totalModified })
-  }
+  const password = await apiUtils.hashPassword(admin.password);
+  admin.password = password;
+  const user = Repository.userRepository.create(admin);
+  await Repository.userRepository.persistAndFlush(user);
+  return;
 }
 
 export default async function initializers() {
-  await initializeAdminUser()
-  await migrateUsers()
-  console.log('Initializers Successfully run.')
+  await initializeAdminUser();
+
+  console.log("Initializers Successfully run.");
 }

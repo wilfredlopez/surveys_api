@@ -1,22 +1,24 @@
-import Gravatar from 'gravatar'
+import Gravatar from "gravatar";
 
-import { BaseUser, UserInput, SharedUtils, Plan, UserModel } from 'shared'
-import { ObjectID } from 'mongodb'
-import apiUtils from '../apiUtils'
+import { BaseUser, UserInput, SharedUtils, Plan, UserModel } from "shared";
+import { ObjectID } from "mongodb";
+import apiUtils from "../apiUtils";
 
 export class UserHelper implements BaseUser {
-  _id: ObjectID
-  firstname: string
-  lastname: string
-  email: string
-  password: string
-  avatar: string
-  isAdmin: boolean
-  publicKey: string
-  privateKey: string
-  plan: Plan
+  _id: ObjectID;
+  firstname: string;
+  lastname: string;
+  email: string;
+  password: string;
+  avatar: string;
+  isAdmin: boolean;
+  publicKey: string;
+  privateKey: string;
+  plan: Plan;
+  createdAt?: Date;
+  updatedAt?: Date;
 
-  static isValidUserInput = SharedUtils.isValidUserInput
+  static isValidUserInput = SharedUtils.isValidUserInput;
 
   /**
    * DEMO METHOD. NEEDS BETTER IMPLEMENTATION
@@ -24,32 +26,32 @@ export class UserHelper implements BaseUser {
    */
   static hasValidPlan(user: UserModel) {
     if (!user.plan) {
-      return false
+      return false;
     }
-    if (user.plan === 'trial') {
+    if (user.plan === "trial") {
       if (!user.createdAt) {
-        return false
+        return false;
       }
-      const startDate = new Date(user.createdAt!).getTime()
-      const today = Date.now()
-      const days = 86400
+      const startDate = new Date(user.createdAt!).getTime();
+      const today = Date.now();
+      const days = 86400;
 
-      const diff = 30 * days
+      const diff = 30 * days;
       if (startDate + diff > today) {
-        return false
+        return false;
       } else {
-        return true
+        return true;
       }
     }
-    return true
+    return true;
   }
 
   static isValidKey(key: string) {
-    const valid = apiUtils.verifyToken(key)
+    const valid = apiUtils.verifyToken(key);
     if (valid.userId) {
-      return true
+      return true;
     }
-    return false
+    return false;
   }
   constructor({
     email,
@@ -61,22 +63,24 @@ export class UserHelper implements BaseUser {
     privateKey,
     plan,
   }: UserInput) {
-    this._id = new ObjectID()
-    this.email = email.toLowerCase()
-    this.isAdmin = isAdmin || false
-    this.password = password
-    this.firstname = firstname
-    const keys = apiUtils.createClientKeys(this._id, this.email)
-    this.publicKey = privateKey || keys.publicKey
-    this.privateKey = publicKey || keys.privateKey
-    this.lastname = lastname
-    const gravatar = Gravatar.url(email.toLowerCase())
-    this.avatar = gravatar
-    this.plan = plan || 'trial'
+    this._id = new ObjectID();
+    this.email = email.toLowerCase();
+    this.isAdmin = isAdmin || false;
+    this.password = password;
+    this.firstname = firstname;
+    const keys = apiUtils.createClientKeys(this._id, this.email);
+    this.publicKey = privateKey || keys.publicKey;
+    this.privateKey = publicKey || keys.privateKey;
+    this.lastname = lastname;
+    const gravatar =
+      Gravatar.url(this.email, { protocol: "https" }) ||
+      "https://www.gravatar.com/avatar/00000000000000000000000000000000";
+    this.avatar = gravatar;
+    this.plan = plan || "trial";
   }
 
   async hashPassword() {
-    const hash = await apiUtils.hashPassword(this.password)
-    this.password = hash
+    const hash = await apiUtils.hashPassword(this.password);
+    this.password = hash;
   }
 }

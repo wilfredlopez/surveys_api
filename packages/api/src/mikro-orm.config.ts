@@ -8,7 +8,6 @@ const options: Options = {
   entities: [User, Survey, BaseEntity, SurveyQuestion],
   // dbName: MONGO_DB,
   clientUrl: MONGOURL,
-
   highlighter: new MongoHighlighter(),
   debug: true,
 };

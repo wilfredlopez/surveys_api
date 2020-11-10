@@ -6,28 +6,33 @@ import {
   OneToMany,
   Cascade,
 } from "@mikro-orm/core";
-import { RawSurvey } from "shared";
+import {
+  // RawSurvey,
+  SurveyModel,
+} from "shared";
 import { BaseEntity } from "./BaseEntity";
 import { User } from "./index";
 import { SurveyQuestion } from ".";
+import { OmitParams } from "./OmitParams.type";
 
-interface SI
-  extends Omit<
-    RawSurvey,
-    "creator" | "updatedAt" | "createdAt" | "creatorId" | "questions"
-  > {
+interface SurveyEntityModel extends Omit<SurveyModel, "questions"> {
   creator: User;
 }
 @Entity()
-export class Survey extends BaseEntity implements SI {
+export class Survey extends BaseEntity implements SurveyEntityModel {
   @ManyToOne()
   creator: User;
+  @Property()
+  creatorId: string;
   @Property({ nullable: false })
   name: string;
   @Property({ default: false })
   open: boolean;
 
-  @OneToMany(() => SurveyQuestion, (b) => b.survey, { cascade: [Cascade.ALL] })
+  @OneToMany(() => SurveyQuestion, (b) => b.survey, {
+    cascade: [Cascade.ALL],
+    default: [],
+  })
   questions = new Collection<SurveyQuestion>(this);
   @Property()
   metaObject?: object;
@@ -38,7 +43,7 @@ export class Survey extends BaseEntity implements SI {
   @Property()
   metaArrayOfStrings?: string[];
 
-  constructor(data: SI) {
+  constructor(data: OmitParams<SurveyEntityModel>) {
     super();
     this.name = data.name;
     this.open = data.open;

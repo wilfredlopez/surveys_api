@@ -1,22 +1,25 @@
 import { UserModel } from './userInterfaces'
-import { Document } from 'mongoose'
-import { WithTimeStamps, ClientI } from './common'
+import { WithTimeStampsServer, WithIdClient } from './common'
+import { Collection } from '@mikro-orm/core'
+import { BaseEntityModel } from './BaseEntityModel'
 import {
   QuestionInput,
   SurveyQuestionModel,
   SurveyQuestionClient,
 } from './SurveyQuestionModel'
 
-export interface RawSurvey extends WithTimeStamps {
+export interface RawSurvey extends WithTimeStampsServer {
   name: string
   open: boolean
-  questions: SurveyQuestionModel[]
-  creatorId: UserModel['_id']
   creator?: UserModel | undefined
 }
 
-export interface SurveyModel extends RawSurvey, Document {}
-export interface SurveyClient extends Omit<RawSurvey, 'questions'>, ClientI {
+export interface SurveyModel extends RawSurvey, BaseEntityModel {
+  questions: Collection<SurveyQuestionModel>
+}
+export interface SurveyClient
+  extends Omit<RawSurvey, 'questions'>,
+    WithIdClient {
   questions: SurveyQuestionClient[]
 }
 
@@ -52,5 +55,5 @@ export interface SurveyCreateResponse {
 
 export type SurveyUnpolulated = Exclude<RawSurvey, 'questions'> & {
   _id: string
-  questions: string[]
+  questions: any[]
 }

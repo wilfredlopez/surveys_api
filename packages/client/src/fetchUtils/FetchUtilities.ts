@@ -1,5 +1,5 @@
 import { API_URL, LOCALSTORAGE_TOKEN } from '../constants'
-import { LoginResponse, SuccessLogin } from 'shared'
+import { SuccessLoginClient, LoginResponseClient } from 'shared'
 import * as H from 'history'
 import RouteGetter from '../RouteGetter'
 import { UserClient } from 'shared'
@@ -48,7 +48,7 @@ async function wrapFetchGet<Returning extends any>(url: string) {
 
 export default class FetchUtilities {
   async deleteSurvey(surveyId: string) {
-    const res = await fetch(`${API_URL}/surveys/${surveyId}`, {
+    const res = await fetch(`${API_URL}/survey/${surveyId}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -67,14 +67,15 @@ export default class FetchUtilities {
       headers.set('Authorization', `Bearer ${token}`)
     }
 
-    const data = await wrapFetchPost<UserClient>(`${API_URL}/orders`, info)
+    const data = await wrapFetchPost<UserClient>(`${API_URL}/order`, info)
 
     return data
   }
+
   async fetchOneSurvey(id: string, publicKey: string) {
     try {
       const data = await wrapFetchGet<SurveyClient>(
-        `${API_URL}/surveys/${id}?publicKey=${publicKey}`
+        `${API_URL}/survey/${id}?publicKey=${publicKey}`
       )
       // const res = await fetch(`${API_URL}/surveys/${id}`)
       // const data = await res.json()
@@ -93,8 +94,8 @@ export default class FetchUtilities {
 
   async addSurveyAnswers(surveyId: string, answers: AnswerInput[]) {
     try {
-      const res = await fetch(`${API_URL}/surveys/answer/${surveyId}`, {
-        method: 'POST',
+      const res = await fetch(`${API_URL}/survey/answer/${surveyId}`, {
+        method: 'PUT',
         body: JSON.stringify(answers),
         headers: {
           'Content-Type': 'application/json',
@@ -117,7 +118,7 @@ export default class FetchUtilities {
 
   async postNewSurvey(data: ExpectedCreate): Promise<SurveyCreateResponse> {
     const token = localStorage.getItem(LOCALSTORAGE_TOKEN)
-    const res = await fetch(API_URL + '/surveys', {
+    const res = await fetch(API_URL + '/survey', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -131,7 +132,7 @@ export default class FetchUtilities {
   }
 
   async register(input: UserInput) {
-    const res = await fetch(API_URL + '/register', {
+    const res = await fetch(API_URL + '/user', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -139,7 +140,7 @@ export default class FetchUtilities {
       body: JSON.stringify(input),
     })
 
-    const data = (await res.json()) as LoginResponse
+    const data = (await res.json()) as LoginResponseClient
     if (data.token) {
       localStorage.setItem(LOCALSTORAGE_TOKEN, data.token)
     }
@@ -147,7 +148,7 @@ export default class FetchUtilities {
   }
 
   async login({ email, password }: { email: string; password: string }) {
-    const res = await fetch(API_URL + '/login', {
+    const res = await fetch(API_URL + '/user/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -158,11 +159,11 @@ export default class FetchUtilities {
       }),
     })
 
-    const data = (await res.json()) as LoginResponse
+    const data = (await res.json()) as LoginResponseClient
     if (data.token) {
       localStorage.setItem(LOCALSTORAGE_TOKEN, data.token)
     }
-    return data
+    return data as SuccessLoginClient
   }
 
   async getMySurveys(): Promise<SurveyUnpolulated[] | { error: string }>
@@ -170,7 +171,7 @@ export default class FetchUtilities {
   async getMySurveys(): Promise<{ error: string }>
   async getMySurveys() {
     const token = localStorage.getItem(LOCALSTORAGE_TOKEN)
-    const res = await fetch(API_URL + '/mysurveys', {
+    const res = await fetch(API_URL + '/survey/mysurveys', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -192,8 +193,8 @@ export default class FetchUtilities {
   ): Promise<{ error: string }>
   async updatedSurvey(id: string, surveyData: Partial<SurveyClient>) {
     const token = localStorage.getItem(LOCALSTORAGE_TOKEN)
-    const res = await fetch(API_URL + '/surveys/' + id, {
-      method: 'POST',
+    const res = await fetch(API_URL + '/survey/' + id, {
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
@@ -206,17 +207,17 @@ export default class FetchUtilities {
   }
 
   async getUserWithToken(token: string) {
-    const res = await fetch(API_URL + '/me', {
+    const res = await fetch(API_URL + '/user/me', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     })
-    const data = (await res.json()) as LoginResponse
+    const data = (await res.json()) as LoginResponseClient
     if (data.error) {
       throw new Error(data.error)
     }
 
-    return data as SuccessLogin
+    return data as SuccessLoginClient
   }
 
   getToken() {
@@ -225,11 +226,11 @@ export default class FetchUtilities {
   }
 
   async updatedSurveyQuestion(
-    { qid, sid }: { sid: string; qid: string },
+    { qid }: { sid: string; qid?: string },
     data: Partial<SurveyQuestionClient>
   ) {
     const token = this.getToken()
-    const res = await fetch(API_URL + `/surveys/${sid}/question/${qid}`, {
+    const res = await fetch(API_URL + `/question/${qid}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

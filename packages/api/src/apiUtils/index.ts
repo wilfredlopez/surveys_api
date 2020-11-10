@@ -1,58 +1,58 @@
-import jwt from 'jsonwebtoken'
-import { UserModel } from 'shared'
-import bcrypt from 'bcryptjs'
+import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
 
-import { JWT_SECRET } from '../env'
-import { ObjectID } from 'mongodb'
+import { JWT_SECRET } from "../env";
+import { ObjectID } from "mongodb";
+import { User } from "../entities/User";
 
 class UtilsBase {
   async hashPassword(password: string) {
-    const hashedPassword = await bcrypt.hash(password, 10)
-    return hashedPassword
+    const hashedPassword = await bcrypt.hash(password, 10);
+    return hashedPassword;
   }
 
   async isValidPassword(password: string, correctPassword: string) {
-    const validPassword = await bcrypt.compare(password, correctPassword)
+    const validPassword = await bcrypt.compare(password, correctPassword);
 
-    return validPassword
+    return validPassword;
   }
 
   createClientKeys(userId: string | ObjectID, email: string) {
     const publicKey = jwt.sign({ userId: userId, email: email }, JWT_SECRET, {
       // expiresIn: '30min',
-      expiresIn: '30days',
-    })
+      expiresIn: "30days",
+    });
     const privateKey = jwt.sign({ userId: userId, email: email }, JWT_SECRET, {
       // expiresIn: '30min',
-      expiresIn: '1year',
-    })
+      expiresIn: "1year",
+    });
 
-    return { publicKey, privateKey }
+    return { publicKey, privateKey };
   }
 
-  createToken(user: UserModel) {
+  createToken(user: User) {
     const accessToken = jwt.sign(
       { userId: user._id, email: user.email },
       JWT_SECRET,
       {
         // expiresIn: '30min',
-        expiresIn: '1day',
+        expiresIn: "1day",
       }
-    )
+    );
 
-    return { accessToken }
+    return { accessToken };
   }
 
   verifyToken(accessToken: string) {
     const data = jwt.verify(accessToken, JWT_SECRET!) as {
-      userId?: string
-      email?: string
-    }
+      userId?: string;
+      email?: string;
+    };
 
-    return data
+    return data;
   }
 }
 
-const apiUtils = new UtilsBase()
+const apiUtils = new UtilsBase();
 
-export default apiUtils
+export default apiUtils;

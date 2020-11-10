@@ -4,18 +4,15 @@ import {
   Entity,
   OneToMany,
   Property,
-  ManyToOne,
 } from "@mikro-orm/core";
 
 import { Survey } from ".";
 import { BaseEntity } from "./BaseEntity";
-import { BaseUser, Plan } from "shared";
+import { BaseUser, Plan, UserModel } from "shared";
 
 @Entity()
-export class User
-  extends BaseEntity
-  implements Omit<BaseUser, "createdAt" | "updatedAt"> {
-  @Property()
+export class User extends BaseEntity implements UserModel {
+  @Property({ unique: true })
   email: string;
   @Property()
   firstname: string;
@@ -29,15 +26,15 @@ export class User
   publicKey: string;
   @Property()
   privateKey: string;
+  @Property({ default: false })
   isAdmin?: boolean | undefined;
   @Property()
   plan: Plan;
 
-  @OneToMany(() => Survey, (b) => b.creator, { cascade: [Cascade.ALL] })
-  books = new Collection<Survey>(this);
-
-  @ManyToOne(() => Survey)
-  favouriteBook?: Survey;
+  @OneToMany(() => Survey, (survey) => survey.creator, {
+    cascade: [Cascade.ALL],
+  })
+  surveys = new Collection<Survey>(this);
 
   constructor(user: BaseUser) {
     super();

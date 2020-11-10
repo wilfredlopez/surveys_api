@@ -11,6 +11,7 @@
   "author": "Wilfred Lopez",
   "license": "ISC",
   "dependencies": {
+    "@mikro-orm/core": "^4.2.3",
     "@wilfredlopez/react-utils": "^3.0.4"
   },
   "devDependencies": {
