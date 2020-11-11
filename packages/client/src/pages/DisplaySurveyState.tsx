@@ -22,7 +22,7 @@ function isStateUndefined(history: any) {
 }
 
 const DisplaySurveysState = (_: Props) => {
-    const { openSurveys, dispatch, fetchSurveys } = useAppContext()
+    const { openSurveys, dispatch, fetchSurveys, user } = useAppContext()
     const history = useLocation<{ publicKey: string }>()
 
     const { publicKey } = history?.state || {}
@@ -88,12 +88,12 @@ const DisplaySurveysState = (_: Props) => {
 
     return (
         <Container>
-            <Box display="flex" alignItems="center" justifyContent="space-between">
-                <h1>Surveys</h1>
-                <Box mx={2}>
+            <Box mt={4} mx={2} textAlign="right">
+                {user &&
 
                     <ButtonFlex onClick={refetch} color="outlinedInfo" size="small">Refetch</ButtonFlex>
-                </Box>
+
+                }
             </Box>
             {(!openSurveys || openSurveys.length === 0) && error && <div><p style={{ color: 'red' }}>{error.message}</p></div>}
             {loading && <SurveySkeleton />}

@@ -45,7 +45,7 @@ export const SurveyComponent = ({ survey, number }: Props) => {
     function handleAnswer() {
 
         actionCreators.addSurveyAnswers(survey.id, answers).then((good) => {
-            history.push(RouteGetter.path('answers', { id: survey.id }))
+            history.push(RouteGetter.path('thanks'))
         }).catch(e => {
             console.log(e)
         })

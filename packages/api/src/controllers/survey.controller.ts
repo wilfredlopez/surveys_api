@@ -298,9 +298,9 @@ router.put("/answer/:id", async (req, res) => {
           question.answers = [];
         }
 
-        const ansssss: string[] = question.answers;
+        const existingAnswers: string[] = question.answers;
         for (let val of answer.answer) {
-          ansssss.push(val);
+          existingAnswers.push(val);
         }
 
         await Repository.surveyQuestionRepository.nativeUpdate(
@@ -308,7 +308,7 @@ router.put("/answer/:id", async (req, res) => {
             id: answer.questionId,
           },
           {
-            answers: ansssss,
+            answers: existingAnswers,
           }
         );
         questions.push(question);

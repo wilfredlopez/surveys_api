@@ -14,6 +14,7 @@ type RouteKeys =
   | 'display-surveys-state'
   | 'one-survey'
   | 'one-survey-state'
+  | 'thanks'
 
 const routes: RouterGetterRecord<RouteKeys> = {
   home: {
@@ -64,6 +65,9 @@ const routes: RouterGetterRecord<RouteKeys> = {
   },
   'one-survey-state': {
     value: '/survey',
+  },
+  thanks: {
+    value: '/thankyou',
   },
 }
 

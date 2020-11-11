@@ -1,5 +1,7 @@
 .unstyled-link{
   min-width: fit-content;
+  margin-top: auto;
+    margin-bottom: auto;
 }
 .left-separator{
   margin-left: 1rem;
