@@ -34,7 +34,7 @@ export default function AppMenu() {
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
             <UnstyledLink to={RouteGetter.path('home')}>
-              Reactive Surveys
+              ReSurveys
           </UnstyledLink>
           </Typography>
           {user ? <LinkButton color="textInherit" to={RouteGetter.path('account')} bold>{user.firstname.toUpperCase()}</LinkButton> :
