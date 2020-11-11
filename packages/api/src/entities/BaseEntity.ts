@@ -3,7 +3,10 @@ import { ObjectId } from "@mikro-orm/mongodb";
 import { BaseEntityModel } from "shared";
 
 export abstract class BaseEntity implements BaseEntityModel {
-  @PrimaryKey({ hidden: false, serializedName: "_id" })
+  @PrimaryKey({
+    hidden: false,
+    serializedName: "id",
+  })
   _id!: ObjectId;
 
   @SerializedPrimaryKey()

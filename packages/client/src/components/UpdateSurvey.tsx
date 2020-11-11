@@ -127,7 +127,7 @@ const UpdateSurvey = ({ survey }: Props) => {
             })
             return
         }
-        fetchUtils.updatedSurvey(survey._id, updatedSurvey).then((res) => {
+        fetchUtils.updatedSurvey(survey.id, updatedSurvey).then((res) => {
             if ('error' in res) {
                 fetchUtils.handleUnauthorized(res as any, history)
                 setMessage({
@@ -210,7 +210,7 @@ const UpdateSurvey = ({ survey }: Props) => {
             title: '',
             type: 'multi-choice',
             answers: [],
-            _id: '',
+            id: '',
         }
         const updated = [...questions]
         updated.push(q)

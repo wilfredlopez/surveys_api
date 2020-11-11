@@ -8,5 +8,5 @@ export interface WithTimeStamps {
   updatedAt?: string | undefined
 }
 export interface WithIdClient {
-  _id: string
+  id: string
 }

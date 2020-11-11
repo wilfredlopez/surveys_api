@@ -15,7 +15,7 @@ interface SurveyQuestionElementProps {
 export const SurveyQuestionElement = ({ question, setAnswers }: SurveyQuestionElementProps) => {
 
     function setAnswer(value: string) {
-        setAnswers(value, question._id, question.type)
+        setAnswers(value, question.id, question.type)
     }
 
     const Component = renderTypeOfQuestion(question.type)

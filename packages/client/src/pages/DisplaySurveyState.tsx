@@ -101,7 +101,7 @@ const DisplaySurveysState = (_: Props) => {
                 <p>No Surveys Found.</p>
             </div>}
             {openSurveys.map((s, index) => {
-                return <SurveyComponent number={index + 1} survey={s} key={'survey' + s._id} />
+                return <SurveyComponent number={index + 1} survey={s} key={'survey' + s.id} />
             })}
             <br />
             <br />

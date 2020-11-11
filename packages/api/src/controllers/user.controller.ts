@@ -17,19 +17,20 @@ import {
 import { ControllerRoutes } from "./ControllerRoutes";
 import { unknownError } from "./controlHelper";
 import { SharedUtils } from "../../../shared/src/interfaces/SharedUtils";
+// import { ObjectID } from "mongodb";
 
 const router = Router();
 
 const UserControllerRoutes = new ControllerRoutes("/user", {
-  me: "/me",
-  all: "/",
-  getOne: "/:id",
-  updatedOne: "/:id",
-  login: "/login",
-  register: "/",
-  deleteUser: "/:id",
-  makeAdmin: "/admin/:id",
-  updatePlan: "/plan/:userId",
+  me: "/auth/me", //GET
+  all: "/", // GET
+  getOne: "/one/:id", //GET
+  updatedOne: "/:id", //PUT
+  updatePlan: "/plan/:userId", // PUT
+  login: "/login", // POST
+  register: "/", // POST
+  makeAdmin: "/admin/:id", // POST
+  deleteUser: "/:id", // DELETE
 });
 
 router.get(
@@ -87,12 +88,13 @@ router.get(
   UserControllerRoutes.path("me"),
   async (req: MyRequest, res: Response) => {
     const userId = req.userId;
+
     if (userId) {
-      // const id = new ObjectID(userId)
+      // const id = new ObjectID(userId);
 
       try {
         const user = await Repository.userRepository.findOne({
-          id: req.userId,
+          id: userId,
         });
         if (!user) {
           return res.status(404).json({
@@ -166,14 +168,13 @@ router.post(
 
 router.get(
   UserControllerRoutes.path("getOne"),
+  ensureAdmin,
   async (req: Request, res: Response) => {
     try {
-      const user = await Repository.userRepository.findOne(req.params.id, [
-        "books",
-      ]);
+      const user = await Repository.userRepository.findOne(req.params.id);
 
       if (!user) {
-        return res.status(404).json({ message: "Author not found" });
+        return res.status(404).json({ message: "User not found" });
       }
 
       return res.json(user);
@@ -253,8 +254,6 @@ router.put(
       });
     }
 
-    console.log({ hasKeys });
-
     try {
       const user = await Repository.userRepository.findOne(req.params.id);
 
@@ -307,7 +306,7 @@ router.delete(
       if (userId === id) {
         await Repository.userRepository.removeAndFlush(user);
       } else {
-        const client = await Repository.userRepository.findOne({ id });
+        const client = await Repository.userRepository.findOne({ id: id });
         if (!client) {
           return notFoundError(res, `User not found with id ${id}`);
         }

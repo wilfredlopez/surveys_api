@@ -99,7 +99,7 @@ function ContextGet(context: AppContextState) {
     }
 
     async function getSurvey({ id, publicKey }: { id: string, publicKey: string }) {
-        const exist = context.surveys.openSurveys.find(s => s._id === id)
+        const exist = context.surveys.openSurveys.find(s => s.id === id)
         if (exist) {
             return exist
         } else {

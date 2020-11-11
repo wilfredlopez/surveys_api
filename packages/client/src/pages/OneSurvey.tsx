@@ -90,7 +90,7 @@ export const OneSurveyState = (props: Props) => {
             {!loading && (!survey) && <div>
                 <p>Survey Not Found.</p>
             </div>}
-            <SurveyComponent number={1} survey={survey} key={'survey' + survey._id} />
+            <SurveyComponent number={1} survey={survey} key={'survey' + survey.id} />
             <br />
             <br />
             <br />

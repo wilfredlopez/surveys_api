@@ -207,7 +207,7 @@ export default class FetchUtilities {
   }
 
   async getUserWithToken(token: string) {
-    const res = await fetch(API_URL + '/user/me', {
+    const res = await fetch(API_URL + '/user/auth/me', {
       headers: {
         Authorization: `Bearer ${token}`,
       },

@@ -70,7 +70,7 @@ export class SharedUtils {
       }
     }
 
-    const optionsArr = questions.map(q => ({ id: q._id, opt: q.options }))
+    const optionsArr = questions.map(q => ({ id: q.id, opt: q.options }))
     for (const option of optionsArr) {
       for (let q of option.opt) {
         if (!selected[q]) {

@@ -36,7 +36,7 @@ const MySurveys = (props: Props) => {
             <List>
 
                 {surveys.map((sur, index) => {
-                    return <li key={sur._id}><UserSurvey user={user} survey={sur} index={index} /></li>
+                    return <li key={sur.id}><UserSurvey user={user} survey={sur} index={index} /></li>
                 })}
             </List>
 
@@ -50,7 +50,7 @@ const UserSurvey = ({ survey, user }: { survey: SurveyUnpolulated, index: number
     const [show, setShow] = useBoolean(true)
     function toogleOpen() {
 
-        fetchUtils.updatedSurvey(survey._id, {
+        fetchUtils.updatedSurvey(survey.id, {
             open: !open
         }).then(updated => {
             fetchUtils.handleUnauthorized(updated as any, history)
@@ -64,8 +64,8 @@ const UserSurvey = ({ survey, user }: { survey: SurveyUnpolulated, index: number
     }
 
     function handleDelete() {
-        console.log('deleting', survey._id)
-        fetchUtils.deleteSurvey(survey._id)
+        console.log('deleting', survey.id)
+        fetchUtils.deleteSurvey(survey.id)
             .then(res => {
                 console.log(res)
                 setShow(false)
@@ -78,7 +78,7 @@ const UserSurvey = ({ survey, user }: { survey: SurveyUnpolulated, index: number
     }
 
     function getLink() {
-        return RouteGetter.path('one-survey', { id: survey._id, publicKey: user.publicKey })
+        return RouteGetter.path('one-survey', { id: survey.id, publicKey: user.publicKey })
     }
 
     function copyLink() {
@@ -110,7 +110,7 @@ const UserSurvey = ({ survey, user }: { survey: SurveyUnpolulated, index: number
                         <Button size="small" variant="outlined" onClick={toogleOpen}>Toggle Open</Button>
                         <Button onClick={copyLink}>Copy Link</Button>
                         <Button size="small" variant="outlined" color='secondary' onClick={() => {
-                            history.push(RouteGetter.path('update-survey', { id: survey._id }))
+                            history.push(RouteGetter.path('update-survey', { id: survey.id }))
                         }}>Edit</Button>
                         <ButtonFlex color="outlinedError" size="small" variant="outlined" onClick={handleDelete}>DELETE</ButtonFlex>
                     </ButtonGroup>

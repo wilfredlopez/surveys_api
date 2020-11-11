@@ -32,7 +32,7 @@ export class User extends BaseEntity implements UserModel {
   plan: Plan;
 
   @OneToMany(() => Survey, (survey) => survey.creator, {
-    cascade: [Cascade.ALL],
+    cascade: [Cascade.REMOVE],
   })
   surveys = new Collection<Survey>(this);
 
@@ -49,3 +49,5 @@ export class User extends BaseEntity implements UserModel {
     this.publicKey = user.publicKey;
   }
 }
+
+export default User;

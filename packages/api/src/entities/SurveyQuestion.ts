@@ -26,13 +26,13 @@ export class SurveyQuestion extends BaseEntity implements SurveyQuestionModel {
   @Property({ default: [], persist: true })
   answers: string[];
 
-  @Property()
+  @Property({ nullable: true })
   metaObject?: object;
 
-  @Property()
+  @Property({ nullable: true })
   metaArray?: any[];
 
-  @Property()
+  @Property({ nullable: true })
   metaArrayOfStrings?: string[];
 
   constructor(data: QuestionConstructor) {

@@ -46,14 +46,12 @@ export type ExpectedCreate = {
 
 export type SurveyResponseInput = AnswerInput[]
 
-export interface SurveyCreateResponse extends RawSurvey {
-  _id: string
-}
+export interface SurveyCreateResponse extends RawSurvey, WithIdClient {}
 export interface SurveyCreateResponse {
   error?: string
 }
 
 export type SurveyUnpolulated = Exclude<RawSurvey, 'questions'> & {
-  _id: string
+  id: string
   questions: any[]
 }

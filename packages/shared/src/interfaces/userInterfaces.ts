@@ -41,7 +41,7 @@ export interface ErrorResponse {
   error: string
 }
 export interface ErrorResponseClient {
-  user?: UserModel
+  user?: UserClient
   token?: string
   error: string
 }

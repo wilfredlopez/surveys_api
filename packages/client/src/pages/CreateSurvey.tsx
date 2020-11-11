@@ -9,6 +9,9 @@ import { StringHelper } from '@wilfredlopez/react-utils'
 interface Props {
 
 }
+function hasErrorKey<T extends { error: any }>(t: unknown): t is T {
+    return typeof t === 'object' && t !== null && 'error' in t
+}
 
 const useStyles = makeStyles(theme => ({
     cardRoot: {
@@ -115,7 +118,7 @@ const CreateSurvey = (_: Props) => {
             })
             resetForm()
             setTimeout(() => {
-                history.replace(RouteGetter.path('answers', { id: res._id }))
+                history.replace(RouteGetter.path('answers', { id: res.id }))
 
             }, 3000)
 
@@ -126,6 +129,12 @@ const CreateSurvey = (_: Props) => {
                 fetchUtils.handleUnauthorized({ error: e.message }, history)
                 setMessage({
                     text: e.message,
+                    type: 'error'
+                })
+            } else if (hasErrorKey(e)) {
+
+                setMessage({
+                    text: e.error,
                     type: 'error'
                 })
             }

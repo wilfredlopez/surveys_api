@@ -22,7 +22,7 @@ const surveyReducer: React.Reducer<SurveyState, SurveyActions> = (
       return { ...state }
     case 'addSurvey':
       const exist = state.surveys.openSurveys.findIndex(
-        s => s._id === action.payload._id
+        s => s.id === action.payload.id
       )
       if (exist !== -1) {
         return { ...state }

@@ -23,14 +23,14 @@ router.get("/", async (req: Request, res: Response) => {
   try {
     const client = await validateClientKey(req.query.publicKey as string);
     if (typeof client === "string") {
-      return res.status(404).json({
+      return res.status(400).json({
         error: client,
       });
     }
     const surveys = await Repository.surveyRepository.find(
       {
         open: true,
-        creator: client.id,
+        creator: client._id,
       },
       ["questions"],
       { name: QueryOrder.DESC }
@@ -72,7 +72,8 @@ router.get("/mysurveys", async (req: MyRequest, res) => {
   res.json(surveys);
 });
 
-router.get("/:id", async (req: Request, res: Response) => {
+router.get("/:id", async (req: Request<{ id: string }>, res: Response) => {
+  const id = req.params.id;
   const client = await validateClientKey(req.query.publicKey as string);
   if (typeof client === "string") {
     return res.status(404).json({
@@ -82,7 +83,7 @@ router.get("/:id", async (req: Request, res: Response) => {
   try {
     const survey = await Repository.surveyRepository.findOne(
       {
-        id: req.params.id,
+        id: id,
         creator: client._id,
       },
       ["questions"]
@@ -153,6 +154,7 @@ router.post("/", ensureAuthenticated, async (req: MyRequest, res: Response) => {
     }
     return res.json(survey);
   } catch (e) {
+    console.error(e);
     return res.status(400).json({ message: e.message });
   }
 });
@@ -190,7 +192,7 @@ router.put("/:id", async (req: Request, res: Response) => {
       }
       if (Array.isArray(valuesToUpdate.questions)) {
         const nonExistingQuestions = (valuesToUpdate.questions as SurveyQuestionClient[]).filter(
-          (q) => isInvalidID(q._id)
+          (q) => isInvalidID(q.id)
         );
         const raw_questions = SurveyQuestionHelper.transformQuestions(
           nonExistingQuestions
@@ -253,7 +255,7 @@ router.delete(
     // }
 
     const deleted = await Repository.surveyRepository.nativeDelete({
-      id: survey.id,
+      _id: survey._id,
     });
 
     return res.json({ survey, deleted });
@@ -263,7 +265,7 @@ router.delete(
 router.put("/answer/:id", async (req, res) => {
   try {
     const id = req.params.id as string;
-    const survey = await Repository.surveyRepository.findOne({ id });
+    const survey = await Repository.surveyRepository.findOne({ id: id });
     if (!survey) {
       res.status(404).json({
         error: "Survey Not Found",

@@ -2,7 +2,13 @@ import apiUtils from "./apiUtils";
 import { Repository } from "./app";
 import { UserHelper } from "./helpers";
 
-async function initializeAdminUser() {
+export async function resetDatabase() {
+  await Repository.surveyRepository.nativeDelete({});
+  await Repository.surveyQuestionRepository.nativeDelete({});
+  await Repository.userRepository.nativeDelete({});
+}
+
+export async function initializeAdminUser() {
   const admin = new UserHelper({
     email: "test@test.com",
     firstname: "Wilfred",
@@ -15,6 +21,9 @@ async function initializeAdminUser() {
   });
 
   if (exists) {
+    // console.log({ exists });
+
+    // await Repository.userRepository.nativeDelete({ email: admin.email });
     return;
   }
   const password = await apiUtils.hashPassword(admin.password);
@@ -25,6 +34,7 @@ async function initializeAdminUser() {
 }
 
 export default async function initializers() {
+  // await resetDatabase();
   await initializeAdminUser();
 
   console.log("Initializers Successfully run.");

@@ -21,7 +21,7 @@ const useProtectedRoute = (redirectTo?: string) => {
   }, [user, loadingUser])
   if (!user) {
     const fakeUser: UserClient = {
-      _id: '',
+      id: '',
       avatar: '',
       email: '',
       firstname: '',

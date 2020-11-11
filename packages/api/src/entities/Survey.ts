@@ -10,6 +10,7 @@ import {
   // RawSurvey,
   SurveyModel,
 } from "shared";
+
 import { BaseEntity } from "./BaseEntity";
 import { User } from "./index";
 import { SurveyQuestion } from ".";
@@ -34,13 +35,13 @@ export class Survey extends BaseEntity implements SurveyEntityModel {
     default: [],
   })
   questions = new Collection<SurveyQuestion>(this);
-  @Property()
+  @Property({ nullable: true })
   metaObject?: object;
 
-  @Property()
+  @Property({ nullable: true })
   metaArray?: any[];
 
-  @Property()
+  @Property({ nullable: true })
   metaArrayOfStrings?: string[];
 
   constructor(data: OmitParams<SurveyEntityModel>) {
@@ -48,5 +49,6 @@ export class Survey extends BaseEntity implements SurveyEntityModel {
     this.name = data.name;
     this.open = data.open;
     this.creator = data.creator;
+    this.creatorId = String(data.creator);
   }
 }

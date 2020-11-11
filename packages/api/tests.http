@@ -7,10 +7,11 @@ GET http://localhost:5200/
 #************************#
 ##### AUTH #####
 #************************#
-@Token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZmE3NGI2NWVkNWM3ODAxMDQ3NmNhNzciLCJlbWFpbCI6InRlc3RAdGVzdC5jb20iLCJpYXQiOjE2MDQ5NTczNjUsImV4cCI6MTYwNTA0Mzc2NX0.tqRaVYq5PNQQm8-CSwoOdsgBWbFnJ2DbPSI3uYweXIg
+@Token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZmFiNDNmNzFjZTcyYjAwOWFmZmE0YzIiLCJlbWFpbCI6InRlc3RAdGVzdC5jb20iLCJpYXQiOjE2MDUwNjA2MTksImV4cCI6MTYwNTE0NzAxOX0.L185qzhkLuec4ZH8YSoM0xATm8IYhBrv-FH7Fz8XotA
 
 ###  ME
-GET http://localhost:5200/user/me/
+
+GET http://localhost:5200/user/auth/me
 Authorization: Bearer {{Token}}
 
 ###  ALL USERS

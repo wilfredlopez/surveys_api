@@ -44,8 +44,8 @@ export const SurveyComponent = ({ survey, number }: Props) => {
 
     function handleAnswer() {
 
-        actionCreators.addSurveyAnswers(survey._id, answers).then((good) => {
-            history.push(RouteGetter.path('answers', { id: survey._id }))
+        actionCreators.addSurveyAnswers(survey.id, answers).then((good) => {
+            history.push(RouteGetter.path('answers', { id: survey.id }))
         }).catch(e => {
             console.log(e)
         })
@@ -59,7 +59,7 @@ export const SurveyComponent = ({ survey, number }: Props) => {
 
 
                 {survey.questions.map((q, qindex) => {
-                    return <ListItem key={q._id + qindex} ><SurveyQuestionElement question={q} setAnswers={handleAnswes} /></ListItem>
+                    return <ListItem key={q.id + qindex} ><SurveyQuestionElement question={q} setAnswers={handleAnswes} /></ListItem>
                 })
                 }
             </List>
@@ -71,7 +71,7 @@ export const SurveyComponent = ({ survey, number }: Props) => {
                     <Button disabled={isDisabled} variant="contained" color="primary" onClick={handleAnswer}>Submit your answers</Button>
                     <span className="left-separator"></span>
                     {user &&
-                        <Link to={RouteGetter.path('answers', { id: survey._id })}>
+                        <Link to={RouteGetter.path('answers', { id: survey.id })}>
                             <Button variant="outlined">Answers</Button>
                         </Link>
                     }

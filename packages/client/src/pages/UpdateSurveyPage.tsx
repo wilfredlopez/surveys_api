@@ -10,7 +10,7 @@ interface Props {
 
 }
 
-const UpdateSurveyPage = (props: Props) => {
+const UpdateSurveyPage = (_props: Props) => {
     const { id } = useParams<{ id: string }>()
     const [survey, setSurvey] = React.useState<SurveyClient>()
 

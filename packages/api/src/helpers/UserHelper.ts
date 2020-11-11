@@ -72,15 +72,19 @@ export class UserHelper implements BaseUser {
     this.publicKey = privateKey || keys.publicKey;
     this.privateKey = publicKey || keys.privateKey;
     this.lastname = lastname;
-    const gravatar =
-      Gravatar.url(this.email, { protocol: "https" }) ||
+    const gravatar = Gravatar.url(this.email, { protocol: "https" });
+    this.avatar =
+      gravatar ||
       "https://www.gravatar.com/avatar/00000000000000000000000000000000";
-    this.avatar = gravatar;
     this.plan = plan || "trial";
   }
 
   async hashPassword() {
     const hash = await apiUtils.hashPassword(this.password);
     this.password = hash;
+  }
+
+  static async hashToPassword(raw_password: string) {
+    return apiUtils.hashPassword(raw_password);
   }
 }
